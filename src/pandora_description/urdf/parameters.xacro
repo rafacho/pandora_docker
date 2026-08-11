@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pandora">
+	<!-- constants -->
+	<xacro:property name="PI" value="3.1415926535897931"/>
+	<!-- /constants -->
+
+	<!-- Base Link -->
+	<xacro:property name="base_link" value="base_link" />	
+	<xacro:property name="base_link_mass" value="30" /> 		<!-- arbitrary value for mass -->
+	<xacro:property name="base_link_x" value="0.3" /> 		<!-- "0.45"value in x axis -->
+	<xacro:property name="base_link_y" value="0.35" />		<!-- value in y axis -->
+	<xacro:property name="base_link_z" value="0.10" /> 	<!-- value in z axis -->
+	<xacro:property name="base_link_axel_offset" value="0.02" /><!-- Space btw top of beam and the each joint -->
+
+	<!-- Base -->
+	<xacro:property name="base" value="base" />	
+	<xacro:property name="base_mass" value="5" /> 		<!-- arbitrary value for mass -->
+	<xacro:property name="base_x" value="0.75" /> 		<!-- "0.45"value in x axis -->
+	<xacro:property name="base_y" value="0.25" />		<!-- value in y axis -->
+	<xacro:property name="base_z" value="0.01" /> 	<!-- value in z axis -->
+	<xacro:property name="base_axel_offset" value="0.02" /><!-- Space btw top of beam and the each joint -->
+	
+	<!-- Frame -->
+	<xacro:property name="frame" value="frame" />
+	<xacro:property name="frame_mass" value="1.2" />			<!-- arbitrary value for mass -->
+	<xacro:property name="frame_x" value="0.05" />	 		<!-- value in x axis -->
+	<xacro:property name="frame_y" value="0.1" />		<!-- value in y axis -->
+	<xacro:property name="frame_z" value="0.015" /> 	<!-- value in z axis -->
+	<!-- <xacro:property name="frame_axel_offset" value="0.021875" />Space btw top of beam and the each joint -->
+	
+	<!-- Crank -->
+	<xacro:property name="crank" value="crank" />	
+	<xacro:property name="crank_mass" value="0.72" /> 			<!-- arbitrary value for mass -->
+	<xacro:property name="crank_x" value="0.3" />	 	<!-- value in x axis -->
+	<xacro:property name="crank_y" value="0.05" /> 	<!-- value in y axis -->
+	<xacro:property name="crank_z" value="0.01" />	<!-- value in z axis -->
+	<!-- <xacro:property name="crank_axel_offset" value="0.015625" />Space btw top of beam and the each joint -->
+
+
+	<!-- coupler -->
+	<xacro:property name="coupler" value="coupler" />
+	<xacro:property name="coupler_mass" value="0.16" /> 		 <!-- arbitrary value for mass -->
+	<xacro:property name="coupler_x" value="0.08514" /> 	 <!-- value in y axis --> 
+	<xacro:property name="coupler_y" value="0.1" /> 	 <!-- value in x axis -->
+	<xacro:property name="coupler_z" value="0.01" /> 	 <!-- value in z axis -->
+	<!-- <xacro:property name="coupler_axel_offset" value="0.021875"/>Space btw top of beam and the each joint -->
+	<!-- <xacro:property name="coupler_x_offset" value="0.003125" />  x Space btw top of beam and the each joint -->
+	<!-- <xacro:property name="coupler_z_offset" value="0.033125" />  z Space btw top of beam and the each joint -->
+	
+
+	<!-- rocker -->
+	<xacro:property name="rocker" value="rocker" />
+	<xacro:property name="rocker_mass" value="0.5" /> 			<!-- arbitrary value for mass -->
+	<xacro:property name="rocker_x" value="0.3" /> 		<!-- value in x axis -->
+	<xacro:property name="rocker_y" value="0.01"/>	<!-- value in y axis --> 
+	<xacro:property name="rocker_z" value="0.01" />		<!-- value in z axis -->
+	<!-- <xacro:property name="rocker_axel_offset" value="0.0125"/>  Space btw top of beam and the each joint -->
+
+	<!-- fork -->
+	<xacro:property name="fork" value="fork" />
+	<xacro:property name="fork_mass" value="0.12" /> <!-- arbitrary value for mass -->
+	<xacro:property name="fork_radius" value="0.01875" /> <!-- value in x axis -->	 
+	<xacro:property name="fork_lenght" value="0.014644" /> <!-- value in z axis -->
+	<xacro:property name="fork_offset" value="0.01" /> <!-- Space btw top of beam and the each joint -->
+
+	<!-- wheel -->
+	<xacro:property name="wheel" value="wheel" />
+	<xacro:property name="wheel_mass" value="0.35" /> <!-- arbitrary value for mass -->
+	<xacro:property name="wheel_radius" value="0.077" /> <!-- value in x axis -->	 
+	<xacro:property name="wheel_lenght" value="0.03625" /> <!-- value in z axis -->
+	<!-- <xacro:property name="wheel_offset" value="0.0375" /> Space btw top of beam and the each joint -->
+
+
+	<!-- IMU -->
+	<xacro:property name="imu_link" value="imu_link" />	
+</robot>

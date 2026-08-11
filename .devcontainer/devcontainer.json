@@ -1,0 +1,41 @@
+{
+    "name": "ROS 2 Lyrical - Pandora",
+    "privileged": true,
+    "remoteUser": "rafacho",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "USERNAME": "rafacho"
+        }
+    },
+    "workspaceFolder": "/home/rafacho/Acadêmico/Pos-Doc/Escrita/Artigo - PANDORA/submissão/Springer-Scientific_Reports/pandora_jazzy_docker",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/rafacho/Acadêmico/Pos-Doc/Escrita/Artigo - PANDORA/submissão/Springer-Scientific_Reports/pandora_jazzy_docker,type=bind",
+    "customizations": {
+        "vscode": {
+            "extensions":[
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-themes",
+                "twxs.cmake",
+                "donjayamanne.python-extension-pack",
+                "eamodio.gitlens",
+                "ms-iot.vscode-ros"
+            ]
+        }
+    },
+    "containerEnv": {
+        "DISPLAY": "unix:0",
+        "ROS_AUTOMATIC_DISCOVERY_RANGE": "LOCALHOST",
+        "ROS_DOMAIN_ID": "42"
+    },
+    "runArgs": [
+        "--net=host",
+        "--pid=host",
+        "--ipc=host",
+        "-e", "DISPLAY=${env:DISPLAY}"
+    ],
+    "mounts": [
+       "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+       "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached"
+    ],
+    "postCreateCommand": "sudo rosdep update && sudo rosdep install --from-paths src --ignore-src -y && sudo chown -R $(whoami) \"${containerWorkspaceFolder}\" && bash -lc \"source /opt/ros/lyrical/setup.bash && if [ -n \"$(find src -maxdepth 2 -name package.xml 2>/dev/null)\" ]; then colcon build --symlink-install; else echo 'No ROS packages found in src; skipping build.'; fi\""
+}

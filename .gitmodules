@@ -1,0 +1,4 @@
+[submodule "src/ComplianceRos"]
+	path = src/ComplianceRos
+	url = git@github.com:rafacho/ComplianceRos.git
+	branch = master

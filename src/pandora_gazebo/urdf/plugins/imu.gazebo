@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="pandora" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- ROS2 port note (2026-08-04): libgazebo_ros_imu_sensor.so (Gazebo Classic)
+         replaced by Gazebo Sim's native imu sensor, enabled by the world's
+         gz-sim-imu-system plugin (pandora.world). ros_gz_bridge (wired in
+         pandora_launch) republishes the <topic> below to ROS2 as sensor_msgs/Imu
+         on /imu, matching the topic name every consumer already expects. -->
+    <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>25</update_rate>
+            <visualize>true</visualize>
+            <topic>imu</topic>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
+</robot>

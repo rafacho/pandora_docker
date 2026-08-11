@@ -1,0 +1,1170 @@
+<sdf version='1.7'>
+  <model name='pandora'>
+    <joint name='world__base_link' type='fixed'>
+      <pose relative_to='__model__'>0 0 0 0 -0 0</pose>
+      <parent>world</parent>
+      <child>base_link</child>
+    </joint>
+    <link name='base_link'>
+      <pose relative_to='world__base_link'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.006195 0 -0 0</pose>
+        <mass>39.841</mass>
+        <inertia>
+          <ixx>0.480025</ixx>
+          <ixy>0</ixy>
+          <ixz>5.15816e-19</ixz>
+          <iyy>0.675118</iyy>
+          <iyz>-8.67362e-19</iyz>
+          <izz>1.06847</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.3 0.35 0.1</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__frame_1_collision_1'>
+        <pose>0.1875 -0.146719 -0.006 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.075 0.10625 0.016563</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__pin_1_collision_2'>
+        <pose>0.1875 -0.146719 0.015125 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__frame_2_collision_3'>
+        <pose>0.1875 0.146719 -0.006 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.075 0.10625 0.016563</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__pin_2_collision_4'>
+        <pose>0.1875 0.146719 0.015125 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__frame_3_collision_5'>
+        <pose>-0.1875 0.146719 -0.006 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.075 0.10625 0.016563</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__pin_3_collision_6'>
+        <pose>-0.1875 0.146719 0.015125 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__frame_4_collision_7'>
+        <pose>-0.1875 -0.146719 -0.006 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.075 0.10625 0.016563</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__pin_4_collision_8'>
+        <pose>-0.1875 -0.146719 0.015125 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__base_collision_9'>
+        <pose>0 0 0.055 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.75 0.25 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__imu_link_collision_10'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.3 0.35 0.1</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__frame_1_visual_1'>
+        <pose>0.1875 -0.146719 -0.006 -1.5708 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/frame.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__pin_1_visual_2'>
+        <pose>0.1875 -0.146719 0.015125 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__frame_2_visual_3'>
+        <pose>0.1875 0.146719 -0.006 -1.5708 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/frame.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__pin_2_visual_4'>
+        <pose>0.1875 0.146719 0.015125 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__frame_3_visual_5'>
+        <pose>-0.1875 0.146719 -0.006 -1.5708 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/frame.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__pin_3_visual_6'>
+        <pose>-0.1875 0.146719 0.015125 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__frame_4_visual_7'>
+        <pose>-0.1875 -0.146719 -0.006 -1.5708 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/frame.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__pin_4_visual_8'>
+        <pose>-0.1875 -0.146719 0.015125 1.5708 0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__base_visual_9'>
+        <pose>0 0 0.055 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.75 0.25 0.01</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__imu_link_visual_10'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <sensor name='imu_sensor' type='imu'>
+        <always_on>1</always_on>
+        <update_rate>25</update_rate>
+        <visualize>1</visualize>
+        <topic>__default_topic__</topic>
+        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
+          <topicName>imu</topicName>
+          <bodyName>imu_link</bodyName>
+          <updateRateHZ>25.0</updateRateHZ>
+          <gaussianNoise>0.0</gaussianNoise>
+          <xyzOffset>0 0 0</xyzOffset>
+          <rpyOffset>0 0 0</rpyOffset>
+          <frameName>imu_link</frameName>
+          <initialOrientationAsReference>0</initialOrientationAsReference>
+        </plugin>
+        <pose>0 0 0 0 -0 0</pose>
+      </sensor>
+    </link>
+    <joint name='pin__crank_1' type='revolute'>
+      <pose relative_to='base_link'>0.1875 -0.146719 0.015125 1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>crank_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785398</lower>
+          <upper>0.785398</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='crank_1'>
+      <pose relative_to='pin__crank_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.072</mass>
+        <inertia>
+          <ixx>1.23779e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000475172</iyy>
+          <iyz>0</iyz>
+          <izz>0.000486424</izz>
+        </inertia>
+      </inertial>
+      <collision name='crank_1_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.28125 0.044375 0.009688</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='crank_1_visual'>
+        <pose>0.016 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/crank.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='crank__coupler_1' type='revolute'>
+      <pose relative_to='crank_1'>0.25 0 -0.003125 0 0 -1.5708</pose>
+      <parent>crank_1</parent>
+      <child>coupler_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='coupler_1'>
+      <pose relative_to='crank__coupler_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.102822 0.029821 0.002429 0 -0 0</pose>
+        <mass>0.62875</mass>
+        <inertia>
+          <ixx>0.000670227</ixx>
+          <ixy>-0.00031806</ixy>
+          <ixz>-0.000105089</ixz>
+          <iyy>0.00158952</iyy>
+          <iyz>-3.81483e-05</iyz>
+          <izz>0.00219655</izz>
+        </inertia>
+      </inertial>
+      <collision name='coupler_1_collision'>
+        <pose>0.053125 0 -0.003531 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10625 0.08514 0.007063</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='coupler_1_fixed_joint_lump__fork_1_collision_1'>
+        <pose>0.062125 0.04 0 0 -1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.014644</length>
+            <radius>0.01875</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='coupler_1_fixed_joint_lump__wheel_1_collision_2'>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+            <bullet>
+              <friction>0.5</friction>
+              <friction2>0.5</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <ode>
+              <soft_erp>0.5</soft_erp>
+              <max_vel>0.0001</max_vel>
+              <min_depth>0.005</min_depth>
+              <kp>2.1e+15</kp>
+              <kd>1</kd>
+            </ode>
+            <bullet>
+              <soft_cfm>0.007</soft_cfm>
+              <soft_erp>0.25</soft_erp>
+              <kp>1e+06</kp>
+              <kd>5</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='coupler_1_visual'>
+        <pose>0.031125 -0.0025 0.003531 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/coupler.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_1_fixed_joint_lump__fork_1_visual_1'>
+        <pose>0.137125 0.04 0.005 -3.14159 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/fork.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_1_fixed_joint_lump__wheel_1_visual_2'>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+      <sensor name='wheel_1_contact_sensor' type='contact'>
+        <always_on>1</always_on>
+        <update_rate>25</update_rate>
+        <contact>
+          <collision>fork_1_collision_wheel_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <plugin name='wheel_1_bumper' filename='libgazebo_ros_bumper.so'>
+          <bumperTopicName>pandora/contacts_1</bumperTopicName>
+          <frameName>wheel_1</frameName>
+        </plugin>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+      </sensor>
+    </link>
+    <joint name='frame__rocker_1' type='revolute'>
+      <pose relative_to='base_link'>0.1875 -0.146719 -0.047125 1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>rocker_1</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rocker_1'>
+      <pose relative_to='frame__rocker_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>5.53792e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000315267</iyy>
+          <iyz>0</iyz>
+          <izz>0.000315495</izz>
+        </inertia>
+      </inertial>
+      <collision name='rocker_1_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.275 0.009688 0.00625</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='rocker_1_visual'>
+        <pose>0.0955 0 0 0 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/rocker.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='pin__crank_2' type='revolute'>
+      <pose relative_to='base_link'>0.1875 0.146719 0.015125 1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>crank_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785398</lower>
+          <upper>0.785398</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='crank_2'>
+      <pose relative_to='pin__crank_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.072</mass>
+        <inertia>
+          <ixx>1.23779e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000475172</iyy>
+          <iyz>0</iyz>
+          <izz>0.000486424</izz>
+        </inertia>
+      </inertial>
+      <collision name='crank_2_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.28125 0.044375 0.009688</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='crank_2_visual'>
+        <pose>0.016 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/crank.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='crank__coupler_2' type='revolute'>
+      <pose relative_to='crank_2'>0.25 0 -0.003125 0 0 -1.5708</pose>
+      <parent>crank_2</parent>
+      <child>coupler_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='coupler_2'>
+      <pose relative_to='crank__coupler_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.102822 0.029821 0.002429 0 -0 0</pose>
+        <mass>0.62875</mass>
+        <inertia>
+          <ixx>0.000670227</ixx>
+          <ixy>-0.00031806</ixy>
+          <ixz>-0.000105089</ixz>
+          <iyy>0.00158952</iyy>
+          <iyz>-3.81483e-05</iyz>
+          <izz>0.00219655</izz>
+        </inertia>
+      </inertial>
+      <collision name='coupler_2_collision'>
+        <pose>0.053125 0 -0.003531 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10625 0.08514 0.007063</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='coupler_2_fixed_joint_lump__fork_2_collision_1'>
+        <pose>0.062125 0.04 0 0 -1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.014644</length>
+            <radius>0.01875</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='coupler_2_fixed_joint_lump__wheel_2_collision_2'>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+            <bullet>
+              <friction>0.5</friction>
+              <friction2>0.5</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <ode>
+              <soft_erp>0.5</soft_erp>
+              <max_vel>0.0001</max_vel>
+              <min_depth>0.005</min_depth>
+              <kp>2.1e+15</kp>
+              <kd>1</kd>
+            </ode>
+            <bullet>
+              <soft_cfm>0.007</soft_cfm>
+              <soft_erp>0.25</soft_erp>
+              <kp>1e+06</kp>
+              <kd>5</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='coupler_2_visual'>
+        <pose>0.031125 -0.0025 0.003531 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/coupler.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_2_fixed_joint_lump__fork_2_visual_1'>
+        <pose>0.137125 0.04 0.005 -3.14159 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/fork.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_2_fixed_joint_lump__wheel_2_visual_2'>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+      <sensor name='wheel_2_contact_sensor' type='contact'>
+        <always_on>1</always_on>
+        <update_rate>25</update_rate>
+        <contact>
+          <collision>fork_2_collision_wheel_2</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <plugin name='wheel_2_bumper' filename='libgazebo_ros_bumper.so'>
+          <bumperTopicName>pandora/contacts_2</bumperTopicName>
+          <frameName>wheel_2</frameName>
+        </plugin>
+        <pose>0.139625 0.04 0.006 0 -0 0</pose>
+      </sensor>
+    </link>
+    <joint name='frame__rocker_2' type='revolute'>
+      <pose relative_to='base_link'>0.1875 0.146719 -0.047125 1.5708 -0 0</pose>
+      <parent>base_link</parent>
+      <child>rocker_2</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rocker_2'>
+      <pose relative_to='frame__rocker_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>5.53792e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000315267</iyy>
+          <iyz>0</iyz>
+          <izz>0.000315495</izz>
+        </inertia>
+      </inertial>
+      <collision name='rocker_2_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.275 0.009688 0.00625</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='rocker_2_visual'>
+        <pose>0.0955 0 0 0 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/rocker.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='pin__crank_3' type='revolute'>
+      <pose relative_to='base_link'>-0.1875 0.146719 0.015125 1.5708 0 3.14159</pose>
+      <parent>base_link</parent>
+      <child>crank_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785398</lower>
+          <upper>0.785398</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='crank_3'>
+      <pose relative_to='pin__crank_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.072</mass>
+        <inertia>
+          <ixx>1.23779e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000475172</iyy>
+          <iyz>0</iyz>
+          <izz>0.000486424</izz>
+        </inertia>
+      </inertial>
+      <collision name='crank_3_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.28125 0.044375 0.009688</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='crank_3_visual'>
+        <pose>0.016 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/crank.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='crank__coupler_3' type='revolute'>
+      <pose relative_to='crank_3'>0.25 0 -0.003125 0 0 -1.5708</pose>
+      <parent>crank_3</parent>
+      <child>coupler_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='coupler_3'>
+      <pose relative_to='crank__coupler_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.102822 0.029821 0.002429 0 -0 0</pose>
+        <mass>0.62875</mass>
+        <inertia>
+          <ixx>0.000670227</ixx>
+          <ixy>-0.00031806</ixy>
+          <ixz>-0.000105089</ixz>
+          <iyy>0.00158952</iyy>
+          <iyz>-3.81483e-05</iyz>
+          <izz>0.00219655</izz>
+        </inertia>
+      </inertial>
+      <collision name='coupler_3_collision'>
+        <pose>0.053125 0 -0.003531 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10625 0.08514 0.007063</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='coupler_3_fixed_joint_lump__fork_3_collision_1'>
+        <pose>0.062125 0.04 0 0 -1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.014644</length>
+            <radius>0.01875</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='coupler_3_fixed_joint_lump__wheel_3_collision_2'>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+            <bullet>
+              <friction>0.5</friction>
+              <friction2>0.5</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <ode>
+              <soft_erp>0.5</soft_erp>
+              <max_vel>0.0001</max_vel>
+              <min_depth>0.005</min_depth>
+              <kp>2.1e+15</kp>
+              <kd>1</kd>
+            </ode>
+            <bullet>
+              <soft_cfm>0.007</soft_cfm>
+              <soft_erp>0.25</soft_erp>
+              <kp>1e+06</kp>
+              <kd>5</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='coupler_3_visual'>
+        <pose>0.031125 -0.0025 0.003531 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/coupler.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_3_fixed_joint_lump__fork_3_visual_1'>
+        <pose>0.137125 0.04 0.005 -3.14159 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/fork.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_3_fixed_joint_lump__wheel_3_visual_2'>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+      <sensor name='wheel_3_contact_sensor' type='contact'>
+        <always_on>1</always_on>
+        <update_rate>25</update_rate>
+        <contact>
+          <collision>fork_3_collision_wheel_3</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <plugin name='wheel_3_bumper' filename='libgazebo_ros_bumper.so'>
+          <bumperTopicName>pandora/contacts_3</bumperTopicName>
+          <frameName>wheel_3</frameName>
+        </plugin>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+      </sensor>
+    </link>
+    <joint name='frame__rocker_3' type='revolute'>
+      <pose relative_to='base_link'>-0.1875 0.146719 -0.047125 1.5708 0 3.14159</pose>
+      <parent>base_link</parent>
+      <child>rocker_3</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rocker_3'>
+      <pose relative_to='frame__rocker_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>5.53792e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000315267</iyy>
+          <iyz>0</iyz>
+          <izz>0.000315495</izz>
+        </inertia>
+      </inertial>
+      <collision name='rocker_3_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.275 0.009688 0.00625</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='rocker_3_visual'>
+        <pose>0.0955 0 0 0 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/rocker.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='pin__crank_4' type='revolute'>
+      <pose relative_to='base_link'>-0.1875 -0.146719 0.015125 1.5708 0 3.14159</pose>
+      <parent>base_link</parent>
+      <child>crank_4</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785398</lower>
+          <upper>0.785398</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='crank_4'>
+      <pose relative_to='pin__crank_4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.072</mass>
+        <inertia>
+          <ixx>1.23779e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000475172</iyy>
+          <iyz>0</iyz>
+          <izz>0.000486424</izz>
+        </inertia>
+      </inertial>
+      <collision name='crank_4_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.28125 0.044375 0.009688</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='crank_4_visual'>
+        <pose>0.016 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/crank.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='crank__coupler_4' type='revolute'>
+      <pose relative_to='crank_4'>0.25 0 -0.003125 0 0 -1.5708</pose>
+      <parent>crank_4</parent>
+      <child>coupler_4</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='coupler_4'>
+      <pose relative_to='crank__coupler_4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.102822 0.029821 0.002429 0 -0 0</pose>
+        <mass>0.62875</mass>
+        <inertia>
+          <ixx>0.000670227</ixx>
+          <ixy>-0.00031806</ixy>
+          <ixz>-0.000105089</ixz>
+          <iyy>0.00158952</iyy>
+          <iyz>-3.81483e-05</iyz>
+          <izz>0.00219655</izz>
+        </inertia>
+      </inertial>
+      <collision name='coupler_4_collision'>
+        <pose>0.053125 0 -0.003531 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10625 0.08514 0.007063</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='coupler_4_fixed_joint_lump__fork_4_collision_1'>
+        <pose>0.062125 0.04 0 0 -1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.014644</length>
+            <radius>0.01875</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name='coupler_4_fixed_joint_lump__wheel_4_collision_2'>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1</mu>
+              <mu2>1</mu2>
+            </ode>
+            <bullet>
+              <friction>0.5</friction>
+              <friction2>0.5</friction2>
+            </bullet>
+          </friction>
+          <contact>
+            <ode>
+              <soft_erp>0.5</soft_erp>
+              <max_vel>0.0001</max_vel>
+              <min_depth>0.005</min_depth>
+              <kp>2.1e+15</kp>
+              <kd>1</kd>
+            </ode>
+            <bullet>
+              <soft_cfm>0.007</soft_cfm>
+              <soft_erp>0.25</soft_erp>
+              <kp>1e+06</kp>
+              <kd>5</kd>
+              <split_impulse>1</split_impulse>
+              <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+            </bullet>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='coupler_4_visual'>
+        <pose>0.031125 -0.0025 0.003531 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/coupler.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_4_fixed_joint_lump__fork_4_visual_1'>
+        <pose>0.137125 0.04 0.005 -3.14159 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/fork.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='coupler_4_fixed_joint_lump__wheel_4_visual_2'>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.03625</length>
+            <radius>0.0625</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+      <sensor name='wheel_4_contact_sensor' type='contact'>
+        <always_on>1</always_on>
+        <update_rate>25</update_rate>
+        <contact>
+          <collision>fork_4_collision_wheel_4</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <plugin name='wheel_4_bumper' filename='libgazebo_ros_bumper.so'>
+          <bumperTopicName>pandora/contacts_4</bumperTopicName>
+          <frameName>wheel_4</frameName>
+        </plugin>
+        <pose>0.139625 0.04 0.006 -3.14159 0 0</pose>
+      </sensor>
+    </link>
+    <joint name='frame__rocker_4' type='revolute'>
+      <pose relative_to='base_link'>-0.1875 -0.146719 -0.047125 1.5708 0 3.14159</pose>
+      <parent>base_link</parent>
+      <child>rocker_4</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-3.14159</lower>
+          <upper>3.14159</upper>
+          <effort>1000</effort>
+          <velocity>0.5</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rocker_4'>
+      <pose relative_to='frame__rocker_4'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>5.53792e-07</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000315267</iyy>
+          <iyz>0</iyz>
+          <izz>0.000315495</izz>
+        </inertia>
+      </inertial>
+      <collision name='rocker_4_collision'>
+        <pose>0.125 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.275 0.009688 0.00625</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='rocker_4_visual'>
+        <pose>0.0955 0 0 0 -0 3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>0.625 0.625 0.625</scale>
+            <uri>model://pandora_description/meshes/rocker.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <plugin name='joint_state_publisher' filename='libgazebo_ros_joint_state_publisher.so'>
+      <updateRate>25</updateRate>
+      <jointName>pin__crank_1, crank__coupler_1, frame__rocker_1, pin__crank_2, crank__coupler_2, frame__rocker_2, pin__crank_3, crank__coupler_3, frame__rocker_3, pin__crank_4, crank__coupler_4, frame__rocker_4</jointName>
+    </plugin>
+    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+    <joint name='rocker__coupler_1' type='ball'>
+      <parent>rocker_1</parent>
+      <child>coupler_1</child>
+      <pose>0.062125 0 0 0 -0 1.5708</pose>
+    </joint>
+    <joint name='rocker__coupler_2' type='ball'>
+      <parent>rocker_2</parent>
+      <child>coupler_2</child>
+      <pose>0.062125 0 0 0 -0 1.5708</pose>
+    </joint>
+    <joint name='rocker__coupler_3' type='ball'>
+      <parent>rocker_3</parent>
+      <child>coupler_3</child>
+      <pose>0.062125 0 0 0 -0 1.5708</pose>
+    </joint>
+    <static>0</static>
+    <joint name='rocker__coupler_4' type='ball'>
+      <parent>rocker_4</parent>
+      <child>coupler_4</child>
+      <pose>0.062125 0 0 0 -0 1.5708</pose>
+    </joint>
+  </model>
+</sdf>

@@ -1,0 +1,7 @@
+# request field
+float64[] pose_set_point
+
+---
+# response
+bool success
+float64[] joint_cmd_angles

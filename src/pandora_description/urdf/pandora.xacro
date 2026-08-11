@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pandora">
+	
+	<!-- other files -->	
+	<xacro:include filename="$(find pandora_description)/urdf/parameters.xacro" />
+	<xacro:include filename="$(find pandora_description)/urdf/leg.xacro" />
+	<xacro:include filename="$(find pandora_gazebo)/urdf/pandora.gazebo"/>
+	<xacro:include filename="$(find pandora_gazebo)/urdf/plugins/contactWheels.gazebo"/>	
+	<xacro:include filename="$(find pandora_gazebo)/urdf/plugins/imu.gazebo"/>
+
+	<!-- Used for fixing robot to Gazebo 'base_link' -->
+  	<link name="dummy"/>  	
+
+	<joint name="dummy__${base_link}" type="fixed">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link="dummy"/>
+		<child link="${base_link}"/>
+	</joint>
+
+	<!-- Base Link -->	
+	<link name="${base_link}">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		  	<geometry>
+				<box size="${base_link_x} ${base_link_y} ${base_link_z}"/>
+		  	</geometry>	
+		</visual>	
+
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<box size="${base_link_x} ${base_link_y} ${base_link_z}"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="${base_link_mass}"/>
+			<inertia
+				  ixx="${base_link_mass / 12.0 * (base_link_z*base_link_z + base_link_y*base_link_y)}" ixy="0.0" ixz="0.0"
+				  iyy="${base_link_mass / 12.0 * (base_link_z*base_link_z + base_link_x*base_link_x)}" iyz="0.0"
+				  izz="${base_link_mass / 12.0 * (base_link_y*base_link_y + base_link_x*base_link_x)}"/>
+		</inertial>
+	</link>
+
+	<joint name="fixed" type="fixed">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link="${base_link}"/>
+		<child link="${base}"/>
+	</joint>
+
+	<!-- Base -->
+	<link name="${base}">
+		<visual>
+			<origin xyz="0 0 0.055" rpy="0 0 0"/>		  	
+		  	<geometry>
+				<!-- <mesh filename="package:/pandora_description/meshes/teste02.stl" />  -->
+				<box size="${base_x} ${base_y} ${base_z}"/>
+		  	</geometry>	
+		</visual>	
+
+		<collision>
+			<origin xyz="0 0 0.055" rpy="0 0 0"/>
+			<geometry>
+				<box size="${base_x} ${base_y} ${base_z}"/>
+			</geometry>
+		</collision>
+
+		<inertial>
+			<origin xyz="0 0 0.055" rpy="0 0 0"/>
+			<mass value="${base_mass}"/>
+			<inertia
+				  ixx="${base_mass / 12.0 * (base_z*base_z + base_y*base_y)}" ixy="0.0" ixz="0.0"
+				  iyy="${base_mass / 12.0 * (base_z*base_z + base_x*base_x)}" iyz="0.0"
+				  izz="${base_mass / 12.0 * (base_y*base_y + base_x*base_x)}"/>
+		</inertial>
+	</link>
+
+	<joint name="imu_joint" type="fixed">
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<parent link="${base_link}"/>
+		<child link="${imu_link}"/>
+	</joint>
+	
+	<link name="${imu_link}">
+	<inertial>
+		<mass value="0.001"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001"/>
+	</inertial>
+	<visual>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<geometry>
+		<box size="0.001 0.001 0.001"/>
+		</geometry>
+	</visual>
+	<collision>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		<geometry>
+		<box size=".001 .001 .001"/>
+		</geometry>
+	</collision>
+	</link>
+
+	<!-- legs -->
+	<!-- the origin and rotz parameters defines only the leg direction (to front, to back) and side (left, right) -->
+	<!-- the real leg position is defined relative to parameters width (base link and frame) -->
+	<xacro:pandora_leg leg_num="1" origin_x="1" origin_y="-1" rotz="0"/>	
+	<xacro:wheel_contacts_config leg_num="1"/>	
+	
+	<xacro:pandora_leg leg_num="2" origin_x="1" origin_y="1" rotz="0"/>
+	<xacro:wheel_contacts_config leg_num="2"/>	
+	
+	<xacro:pandora_leg leg_num="3" origin_x="-1" origin_y="1" rotz="${PI}"/>
+	<xacro:wheel_contacts_config leg_num="3"/>	
+		
+	<xacro:pandora_leg leg_num="4" origin_x="-1" origin_y="-1" rotz="${PI}"/>
+	<xacro:wheel_contacts_config leg_num="4"/>
+	<!-- /legs -->
+</robot>

@@ -1,0 +1,49 @@
+# ROS2 port note (2026-08-04): bridges the Gazebo Sim topics published by the
+# sensors/plugins declared in pandora_gazebo/urdf/plugins/*.gazebo and
+# pandora_gazebo/urdf/pandora.gazebo to ROS2, replacing the ROS1 Gazebo
+# Classic plugins (libgazebo_ros_bumper.so, libgazebo_ros_imu_sensor.so) that
+# used to publish these directly as ROS topics themselves.
+- ros_topic_name: "/pandora/contacts_1"
+  gz_topic_name: "/pandora/contacts_1"
+  ros_type_name: "ros_gz_interfaces/msg/Contacts"
+  gz_type_name: "gz.msgs.Contacts"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/pandora/contacts_2"
+  gz_topic_name: "/pandora/contacts_2"
+  ros_type_name: "ros_gz_interfaces/msg/Contacts"
+  gz_type_name: "gz.msgs.Contacts"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/pandora/contacts_3"
+  gz_topic_name: "/pandora/contacts_3"
+  ros_type_name: "ros_gz_interfaces/msg/Contacts"
+  gz_type_name: "gz.msgs.Contacts"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/pandora/contacts_4"
+  gz_topic_name: "/pandora/contacts_4"
+  ros_type_name: "ros_gz_interfaces/msg/Contacts"
+  gz_type_name: "gz.msgs.Contacts"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/imu"
+  gz_topic_name: "/imu"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  direction: GZ_TO_ROS
+
+# Root-link ("dummy") world pose, published by the gz-sim-pose-publisher-system
+# plugin in pandora.gazebo; consumed by pandora_control's world_broadcaster
+# node to re-publish it as the "odom"->"dummy" TF.
+- ros_topic_name: "/model/pandora/pose"
+  gz_topic_name: "/model/pandora/pose"
+  ros_type_name: "geometry_msgs/msg/Pose"
+  gz_type_name: "gz.msgs.Pose"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS

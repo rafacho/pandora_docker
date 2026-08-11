@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<robot name="pandora" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<!-- ROS2 port note (2026-08-04): the two ROS1/Gazebo-Classic plugins that used
+	     to live here are both superseded under ros2_control + Gazebo Sim:
+	     - libgazebo_ros_joint_state_publisher.so is replaced by the standard
+	       joint_state_broadcaster/JointStateBroadcaster controller (spawned in
+	       pandora_launch), which reads every joint's state interfaces directly.
+	     - libgazebo_ros_control.so is replaced by gz_ros2_control's
+	       GazeboSimROS2ControlPlugin, which reads the <ros2_control> blocks
+	       declared per-leg in leg.xacro and starts controller_manager with the
+	       controllers configured in pandora_control/config/pandora_controllers.yaml. -->
+	<gazebo>
+		<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+			<parameters>$(find pandora_control)/config/pandora_controllers.yaml</parameters>
+		</plugin>
+	</gazebo>
+
+	<!-- ROS2 port note (2026-08-04): replaces world_broadcaster.py's ROS1 approach of
+	     polling the Gazebo Classic "/gazebo/get_link_state" service (which has no
+	     Gazebo Sim / ros_gz equivalent). This publishes the model's root-link
+	     ("dummy", the first link with no parent, i.e. the floating-base anchor)
+	     world pose on a gz-transport topic; pandora_launch bridges it to ROS2 as
+	     geometry_msgs/msg/Pose, and world_broadcaster.py (ported to rclpy) turns
+	     that into the "odom"->"dummy" TF the rest of the stack expects. -->
+	<gazebo>
+		<plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+			<publish_model_pose>true</publish_model_pose>
+			<publish_link_pose>false</publish_link_pose>
+			<publish_visual_pose>false</publish_visual_pose>
+			<publish_collision_pose>false</publish_collision_pose>
+			<publish_sensor_pose>false</publish_sensor_pose>
+			<publish_nested_model_pose>false</publish_nested_model_pose>
+			<use_pose_vector_msg>false</use_pose_vector_msg>
+			<update_frequency>25</update_frequency>
+		</plugin>
+	</gazebo>
+</robot>

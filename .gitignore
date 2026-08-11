@@ -1,0 +1,13 @@
+# colcon build artifacts (generated inside the container's
+# ~/ros_lyrical_docker_ws, or accidentally at the project root if colcon is
+# ever run outside Docker against a host ROS install)
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+
+# Claude Code local/session-specific settings (not shared config)
+.claude/settings.local.json

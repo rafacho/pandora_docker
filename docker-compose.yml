@@ -1,0 +1,56 @@
+services:
+  pandora:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    image: pandora:lyrical
+    container_name: pandora
+    network_mode: host
+    # NOTE: privileged mode removed (2026-08-05) -- on this hybrid Intel/NVIDIA
+    # host it exposed the *entire* host /dev, including the NVIDIA card, which
+    # defeated the explicit /dev/dri allowlist below (Mesa kept picking the
+    # NVIDIA PCI ID and failing, since there's no NVIDIA userspace/container
+    # runtime in this image). Nothing else in this compose file needs
+    # privileged (X11 forwarding and ROS2 networking don't require it) -- if
+    # you add something that does, prefer a specific `cap_add`/`devices` entry
+    # over blanket `privileged: true`.
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/home/rafacho/.Xauthority
+      - QT_X11_NO_MITSHM=1
+      # Host is a hybrid Intel/NVIDIA laptop (card1/renderD128 = Intel i915,
+      # card2/renderD129 = NVIDIA proprietary driver). The image only has the
+      # Mesa/Intel userspace stack, no NVIDIA container runtime, so force Mesa
+      # to use the Intel "iris" driver instead of letting it auto-probe and
+      # possibly land on the unusable NVIDIA node.
+      - MESA_LOADER_DRIVER_OVERRIDE=iris
+      # Workaround (2026-08-05) for OGRE-Next's GL3Plus renderer crashing with
+      # "Fragment Program ..._ps failed to compile" on this Mesa 25.2.8/iris
+      # (TigerLake) combo -- forcing a lower GL/GLSL profile makes OGRE-Next
+      # generate simpler shaders that avoid whatever codegen path the iris
+      # compiler chokes on here. Remove these two lines if/when a newer Mesa
+      # fixes the underlying driver bug.
+      - MESA_GL_VERSION_OVERRIDE=3.3
+      - MESA_GLSL_VERSION_OVERRIDE=330
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY}:/home/rafacho/.Xauthority:ro
+      - ./src:/home/rafacho/ros_lyrical_docker_ws/src:rw
+      # Only the Intel card/render nodes -- deliberately NOT the whole
+      # /dev/dri directory, so the NVIDIA node (card2/renderD129, unusable
+      # without the NVIDIA container runtime) isn't even visible inside the
+      # container. Re-check with `readlink -f /sys/class/drm/cardN/device` +
+      # `cat .../device/uevent` if this ever needs to be re-derived.
+      - /dev/dri/card1:/dev/dri/card1
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    # Grants the "rafacho" user access to the /dev/dri device nodes above --
+    # they're owned by these groups on the host, not by rafacho, and without
+    # privileged mode plain Unix file permissions are enforced normally.
+    # Adjust the GIDs if `getent group video render` differs on your machine.
+    group_add:
+      - "44"   # video
+      - "110"  # render
+    stdin_open: true
+    tty: true
+    # command: bash
+    command: sleep infinity   # mantém o container vivo; use "docker exec" para abrir um shell

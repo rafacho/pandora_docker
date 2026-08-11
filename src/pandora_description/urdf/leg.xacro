@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- macro legs -->
+<xacro:macro name="pandora_leg" params="leg_num origin_x origin_y rotz">
+
+	<!-- joint base_link_frame -->
+	<joint name="joint_${base_link}_${frame}_${leg_num}" type="fixed">		
+
+		<xacro:if value="${leg_num == 1 or leg_num == 2}">
+			<origin xyz="${(base_link_x / 2 + frame_x / 2)*origin_x} ${(base_link_y / 2 - frame_z / 2 - base_link_axel_offset)*origin_y} -0.006" rpy="${PI/2} ${rotz} 0"/>	
+		</xacro:if>
+		<xacro:if value="${leg_num == 3 or leg_num == 4}">
+			<origin xyz="${(base_link_x / 2 + frame_x / 2)*origin_x} ${(base_link_y / 2 - frame_z / 2 - base_link_axel_offset)*origin_y} -0.006" rpy="${-PI/2} ${rotz} 0"/>	
+		</xacro:if>	
+		
+	    <parent link="${base_link}"/>
+	    <child link="${frame}_${leg_num}"/>
+  	</joint>
+
+  	<!--frame-->
+	<link name="${frame}_${leg_num}">
+		<visual>						
+			<origin xyz="0 0 0" rpy="0 0 ${PI}"/>
+		  	<geometry>				
+				<!-- <mesh filename="package://pandora_description/meshes/${frame}.dae" scale="1 1 1"/>  -->
+				<box size="${frame_x} ${frame_y} ${frame_z} "/>
+		  	</geometry>	
+			<material name="blue">
+				<color rgba="0.0 0.0 0.8 1.0"/>
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="0 0 0" rpy="0 0 ${PI}"/>
+		  	<geometry>
+				<box size="${frame_x} ${frame_y} ${frame_z}"/>
+		  	</geometry>			  	
+		</collision>
+		<inertial>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<mass value="${frame_mass}"/>
+			<inertia
+				  ixx="${frame_mass / 12.0 * (frame_z*frame_z + frame_y*frame_y)}" ixy="0.0" ixz="0.0"
+				  iyy="${frame_mass / 12.0 * (frame_z*frame_z + frame_x*frame_x)}" iyz="0.0"
+				  izz="${frame_mass / 12.0 * (frame_y*frame_y + frame_x*frame_x)}"/>
+		</inertial>			
+	</link>	
+
+	<!-- joint frame_crank -->
+	<joint name="joint_${frame}_${crank}_${leg_num}" type="revolute">	
+		<origin xyz="${frame_x/2} ${frame_y/2} 0" rpy="0 0 0"/>			
+		<axis xyz="0 0 1"/>
+		<limit effort="1000.0" lower="${-PI/4}" upper="${PI/4}" velocity="10"/>		
+		<parent link="${frame}_${leg_num}"/>
+		<child link="${crank}_${leg_num}"/>
+	</joint>
+
+	<!--crank-->
+	<link name="${crank}_${leg_num}">
+		<visual>			
+			<!-- <origin xyz="0 0 0" rpy="0 0 0"/>			 -->
+			<origin xyz="${crank_x/2} ${crank_y/2} 0" rpy="0 0 0"/>			
+			<geometry>
+				<!-- <mesh filename="package://pandora_description/meshes/${crank}.dae" scale="1 1 1"/>	 -->
+				<box size="${crank_x} ${crank_y} ${crank_z} "/>
+		  	</geometry>
+			<material name="red">
+				<color rgba="0.8 0.0 0.0 1.0"/>
+			</material>
+		</visual>
+		<collision>			
+			<origin xyz="${crank_x/2} ${crank_y/2} 0" rpy="0 0 0"/>			
+			<geometry>
+				<box size="${crank_x} ${crank_y} ${crank_z}"/>
+		  	</geometry>		  	
+		</collision>
+		<inertial>			
+			<origin xyz="${crank_x/2} ${crank_y/2} 0" rpy="0 0 0"/>			
+
+			<mass value="${crank_mass}"/>
+			<inertia
+				  ixx="${crank_mass / 12.0 * (crank_y*crank_y + crank_z*crank_z)}" ixy="0.0" ixz="0.0"
+				  iyy="${crank_mass / 12.0 * (crank_x*crank_x + crank_z*crank_z)}" iyz="0.0"
+				  izz="${crank_mass / 12.0 * (crank_x*crank_x + crank_y*crank_y)}"/>
+		</inertial>			
+	</link>
+
+	<!-- joint crank_coupler -->
+	<joint name="joint_${crank}_${coupler}_${leg_num}" type="revolute">		
+		<origin xyz="${crank_x} 0 0" rpy="0 0 0"/>	
+		<axis xyz="0 0 1"/>
+		<limit effort="1000.0" lower="${-PI}" upper="${PI}" velocity="10"/>		
+	    <parent link="${crank}_${leg_num}"/>
+	    <child link="${coupler}_${leg_num}"/>
+  	</joint>
+
+	<!--coupler-->
+	<link name="${coupler}_${leg_num}">
+		<visual>			
+			<origin xyz="${coupler_x/2} ${-coupler_y/2} 0" rpy="0 0 0"/>	
+			<geometry>
+				<!-- <mesh filename="package://pandora_description/meshes/${coupler}.dae" scale="0.625 0.625 0.625"/> -->
+				<box size="${coupler_x} ${coupler_y} ${coupler_z} "/>
+		  	</geometry>
+			<material name="blue">
+				<color rgba="0.0 0.0 0.8 1.0"/>
+			</material>
+		</visual>
+		<collision>
+			<origin xyz="${coupler_x/2} ${-coupler_y/2} 0" rpy="0 0 0"/>	
+			<geometry>
+				<box size="${coupler_x} ${coupler_y} ${coupler_z}"/>
+		  	</geometry>
+		</collision>
+		<inertial>			
+			<origin xyz="${coupler_x/2} ${-coupler_y/2} 0" rpy="0 0 0"/>	
+			<mass value="${coupler_mass}"/>
+			<inertia
+				  ixx="${coupler_mass / 12.0 * (coupler_y*coupler_y + coupler_z*coupler_z)}" ixy="0.0" ixz="0.0"
+				  iyy="${coupler_mass / 12.0 * (coupler_x*coupler_x + coupler_z*coupler_z)}" iyz="0.0"
+				  izz="${coupler_mass / 12.0 * (coupler_x*coupler_x + coupler_y*coupler_y)}"/>
+		</inertial>	
+	</link>
+
+	<!-- joint frame_rocker -->
+	<joint name="joint_${frame}_${rocker}_${leg_num}" type="revolute">
+		<origin xyz="${frame_x/2} ${-frame_y/2} 0" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+		<limit effort="1000.0" lower="${-PI}" upper="${PI}" velocity="10"/>		
+	    <parent link="${frame}_${leg_num}"/>
+	    <child link="${rocker}_${leg_num}"/>
+  	</joint>
+
+  	<!--rocker-->
+	<link name="${rocker}_${leg_num}">
+		<visual>			
+			<origin xyz="${rocker_x/2} ${-rocker_y/2} 0" rpy="0 0 ${PI}"/>
+			<geometry>
+				<!-- <mesh filename="package://pandora_description/meshes/${rocker}.dae" scale="0.625 0.625 0.625"/> -->
+				<box size="${rocker_x} ${rocker_y} ${rocker_z}"/>
+		  	</geometry>	
+			<material name="red">
+				<color rgba="0.8 0.0 0.0 1.0"/>
+			</material>
+		</visual>
+		<collision>			
+			<origin xyz="${rocker_x/2} ${-rocker_y/2} 0" rpy="0 0 ${PI}"/>
+			<geometry>
+				<box size="${rocker_x} ${rocker_y} ${rocker_z}"/>
+		  	</geometry>		  	
+		</collision>
+		<inertial>			
+			<origin xyz="${rocker_x/2} ${-rocker_y/2} 0" rpy="0 0 ${PI}"/>
+			<mass value="${rocker_mass}"/>
+			<inertia
+				  ixx="${rocker_mass / 12.0 * (rocker_y*rocker_y + rocker_z*rocker_z)}" ixy="0.0" ixz="0.0"
+				  iyy="${rocker_mass / 12.0 * (rocker_x*rocker_x + rocker_z*rocker_z)}" iyz="0.0"
+				  izz="${rocker_mass / 12.0 * (rocker_x*rocker_x + rocker_y*rocker_y)}"/>
+		</inertial>			
+	</link>
+
+	<!-- joint coupler_fork -->
+	<joint name="${coupler}_${fork}_${leg_num}" type="fixed">
+		<origin xyz="${coupler_x/2} ${-coupler_y - fork_lenght/2} 0" rpy="${PI/2} 0 0"/>
+		
+		<!-- <axis xyz="0 0 1"/> -->
+		<!-- <limit effort="1000.0" lower="${-PI}" upper="${PI}" velocity="0.5"/>				 -->
+	    
+	    <parent link="${coupler}_${leg_num}"/>
+	    <child link="${fork}_${leg_num}"/>
+  	</joint>
+
+  	<!--fork-->
+	<link name="${fork}_${leg_num}">
+		<visual>			
+			<!-- <origin xyz="0.005 0 -0.075" rpy="${-PI/2} 0 ${PI/2}"/> -->
+			<geometry>
+				<!-- <mesh filename="package://pandora_description/meshes/${fork}.dae" scale="0.625 0.625 0.625"/> -->
+				<cylinder radius="${fork_radius}" length="${fork_lenght}"/> 
+		  	</geometry>	
+		</visual>
+		<collision>			
+			<!-- <origin xyz="0 0 0" rpy="0 0 0"/> -->
+			<geometry>
+				<cylinder radius="${fork_radius}" length="${fork_lenght}"/>
+		  	</geometry>		  	
+		</collision>
+		<inertial>			
+			<!-- <origin xyz="0 0 0" rpy="0 0 0"/> -->
+			<mass value="${fork_mass}"/>
+			<inertia
+				  ixx="${fork_mass / 4 * (fork_radius*fork_radius) + fork_mass / 12 * (fork_lenght*fork_lenght)/4}" ixy="0.0" ixz="0.0"
+				  iyy="${fork_mass / 4 * (fork_radius*fork_radius) + fork_mass / 12 * (fork_lenght*fork_lenght)/4}" iyz="0.0"
+				  izz="${fork_mass / 2 * (fork_radius*fork_radius)}"/>
+		</inertial>			
+	</link>
+
+	<!-- joint fork_wheel -->	
+	<joint name="joint_${fork}_${wheel}_${leg_num}" type="continuous">
+		<origin xyz="0 0 ${wheel_radius + 0.015}" rpy="${PI/2} 0 0"/>
+
+		<axis xyz="0 0 1 "/>
+		<limit effort="350" velocity="20.0"/>
+
+	    <parent link="${fork}_${leg_num}"/>
+	    <child link="${wheel}_${leg_num}"/>
+  	</joint>
+
+  	<!--wheel-->
+	<link name="${wheel}_${leg_num}">
+		<visual>			
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<geometry>
+				<!-- <mesh filename="package://pandora_description/meshes/${wheel}.dae"/> -->
+				 <cylinder radius="${wheel_radius}" length="${wheel_lenght}"/>
+			</geometry>			
+		</visual>
+		<collision>			
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<max_contacts>5</max_contacts>
+			<geometry>
+				<cylinder radius="${wheel_radius}" length="${wheel_lenght}"/>
+		  	</geometry>		  	
+		</collision>
+		<inertial>			
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<mass value="${wheel_mass}"/>
+		<inertia
+			ixx="${((wheel_radius*wheel_radius) * wheel_mass / 4) + ((wheel_lenght*wheel_lenght)/4) * wheel_mass / 12}" ixy="0.0" ixz="0.0"
+			iyy="${((wheel_radius*wheel_radius) * wheel_mass / 4) + ((wheel_lenght*wheel_lenght)/4) * wheel_mass / 12}" iyz="0.0"
+			izz="${((wheel_radius*wheel_radius) * wheel_mass / 2)}"/>
+		</inertial>			
+	</link>
+
+	<!-- ************************************************************** -->
+	 <!-- 4 bar closing joint -->
+	<!-- joint_coupler_dummy_link -->	
+	<joint name="joint_${coupler}_dummy_link_${leg_num}" type="revolute">
+		<origin xyz="0 -${coupler_y} 0" rpy="0 0 0"/>	
+		<axis xyz="0 0 1"/>
+		<limit effort="1000.0" lower="${-PI}" upper="${PI}" velocity="10"/>		
+		<parent link="${coupler}_${leg_num}"/>
+		<child link="dummy_link_${leg_num}"/>
+	  </joint>
+
+	<!-- create rotatable dummy link at joint_coupler_dummy_link position on coupler --> 
+    <link name="dummy_link_${leg_num}">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0"/>	
+			<geometry>
+				<cylinder radius="0.003" length="0.06"/>
+			</geometry>
+		</visual>
+		
+		<inertial>			
+			<origin xyz="0 0 0" rpy="0 0 0"/>				
+			<mass value="0.1"/>
+			<inertia ixx="5.25e-5" ixy="0" ixz="0" iyy="5.25e-5" iyz="0" izz="4.50e-5"/>
+		</inertial>	
+	</link>
+
+	<!-- create a fixed joint btw the dummy link and rocker to close de 4 bar -->
+	<gazebo>
+		<plugin filename="gz-sim-detachable-joint-system" name="gz::sim::systems::DetachableJoint">
+			<parent_link>${rocker}_${leg_num}</parent_link>
+			<child_model>pandora</child_model>
+			<child_link>dummy_link_${leg_num}</child_link>
+			<attach_topic>/loop_leg${leg_num}/attach</attach_topic>
+			<detach_topic>/loop_leg${leg_num}/detach</detach_topic>
+      		<output_topic>loop_leg${leg_num}/state</output_topic>
+
+		</plugin>
+	</gazebo>
+	<!-- **************************************************************** -->
+	
+	<ros2_control name="pandora_leg_${leg_num}" type="system">
+		<hardware>
+			<plugin>gz_ros2_control/GazeboSimSystem</plugin>
+		</hardware>
+		<joint name="joint_${frame}_${crank}_${leg_num}">
+			<command_interface name="effort"/>
+			<state_interface name="position"/>
+			<state_interface name="velocity"/>
+			<state_interface name="effort"/>
+		</joint>
+		<joint name="joint_${crank}_${coupler}_${leg_num}">
+			<state_interface name="position"/>
+			<state_interface name="velocity"/>
+		</joint>
+		<joint name="joint_${frame}_${rocker}_${leg_num}">
+			<state_interface name="position"/>
+			<state_interface name="velocity"/>
+		</joint>
+		<joint name="joint_${fork}_${wheel}_${leg_num}">
+			<command_interface name="velocity"/>
+			<state_interface name="position"/>
+			<state_interface name="velocity"/>
+		</joint> 
+	</ros2_control>
+	
+	<gazebo reference="my_box_link">
+		<material>Gazebo/Blue</material>
+		<material>Gazebo/Red</material>
+	</gazebo>
+
+</xacro:macro>
+</robot>
