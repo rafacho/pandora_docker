@@ -23,6 +23,15 @@
 # (ROS2's parameter YAML parser doesn't support anchors/aliases, so the
 # per-joint gain/SEA-constant duplication can't be avoided in the YAML
 # itself).
+#
+# Terrain note (2026-08-11): added the "world" launch arg to pick between
+# test_world.world (default, flat ground, the world every controller/gain
+# test in this project has been validated against) and
+# worlds/senoidal/senoidal.world (sinusoidal terrain, ~50x50m, 0-0.15m
+# elevation). Resolved via OpaqueFunction instead of PythonExpression string
+# concatenation -- world_file and the spawn "-world" name both depend on
+# which world is picked, and building that as a single conditional string
+# substitution gets fragile fast.
 
 import os
 
@@ -31,6 +40,7 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     IncludeLaunchDescription,
+    OpaqueFunction,
     SetEnvironmentVariable,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -44,21 +54,21 @@ from launch_ros.actions import Node
 from launch_ros.descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
-from pandora_control.generate_controllers_yaml import generate as generate_controllers_yaml
+from pandora_control.generate_controllers_yaml import generate as generate_controllers_yaml #type: ignore
+
+# world launch arg -> (world file relative to pandora_gazebo/worlds,
+# SDF <world name=...>)
+WORLDS = {
+    'flat': (['flat', 'flat.world'], 'flat'),
+    'sinusoidal': (['sinusoidal', 'sinusoidal.world'], 'sinusoidal'),
+}
 
 
-def generate_launch_description():
-    pandora_description_share = FindPackageShare('pandora_description')
-    pandora_gazebo_share = FindPackageShare('pandora_gazebo')
-    pandora_control_share = FindPackageShare('pandora_control')
+def launch_setup(context, pandora_description_share, pandora_gazebo_share, pandora_control_share):
+    world_arg = LaunchConfiguration('world').perform(context)
+    world_path_parts, gz_world_name = WORLDS[world_arg]
 
-    generate_controllers_yaml(
-        os.path.join(
-            get_package_share_directory('pandora_control'), 'config',
-            'pandora_controllers.yaml'))
-
-    # DEBUG: see the note at the top of this file.
-    world_file = PathJoinSubstitution([pandora_gazebo_share, 'worlds', 'test_world.world'])
+    world_file = PathJoinSubstitution([pandora_gazebo_share, 'worlds', *world_path_parts])
     xacro_file = PathJoinSubstitution([pandora_description_share, 'urdf', 'pandora.xacro'])
     bridge_config = PathJoinSubstitution([pandora_gazebo_share, 'config', 'ros_gz_bridge.yaml'])
 
@@ -69,18 +79,9 @@ def generate_launch_description():
     gui = LaunchConfiguration('gui')
     paused = LaunchConfiguration('paused')
 
-    declare_args = [
-        DeclareLaunchArgument('x', default_value='0'),
-        DeclareLaunchArgument('y', default_value='0'),
-        # "ramp" starting height, matches the ROS1 default.
-        DeclareLaunchArgument('z', default_value='0.4'),
-        DeclareLaunchArgument('yaw', default_value='1.5708'),
-        DeclareLaunchArgument('gui', default_value='true'),
-        DeclareLaunchArgument('paused', default_value='false'),
-    ]
-
-    # "model://heightmap" (pandora.world) resolves via this env var (Gazebo
-    # Sim's replacement for Gazebo Classic's GAZEBO_MODEL_PATH). It also has to
+    # "model://heightmap"/"model://senoidal" (used by pandora.world and
+    # senoidal.world respectively) resolve via this env var (Gazebo Sim's
+    # replacement for Gazebo Classic's GAZEBO_MODEL_PATH). It also has to
     # include pandora_description's share *parent* dir, or the GUI can't
     # resolve the "package://pandora_description/meshes/..." mesh URIs used by
     # leg.xacro's <visual> elements (gz-sim has no ROS ament_index-aware
@@ -88,7 +89,6 @@ def generate_launch_description():
     # GZ_SIM_RESOURCE_PATH entry for a "pandora_description/..." subpath,
     # exactly like it does for "model://" URIs). Still needed with
     # test_world.world, since the robot model itself uses those mesh URIs.
-    
     set_resource_path = SetEnvironmentVariable(
         'GZ_SIM_RESOURCE_PATH',
         [
@@ -133,10 +133,7 @@ def generate_launch_description():
         executable='create',
         output='screen',
         arguments=[
-            # DEBUG: test_world.world declares <world name="paragrip_robot_mdam">
-            # -- revert to 'pandora_world' when world_file is switched back to
-            # pandora.world.
-            '-world', 'paragrip_robot_mdam',
+            '-world', gz_world_name,
             '-topic', 'robot_description',
             '-name', 'pandora',
             '-x', x, '-y', y, '-z', z, '-Y', yaw,
@@ -162,7 +159,7 @@ def generate_launch_description():
             PathJoinSubstitution([pandora_control_share, 'launch', 'pandora_control.launch.py'])),
     )
 
-    return LaunchDescription(declare_args + [
+    return [
         set_resource_path,
         gz_sim,
         robot_state_publisher,
@@ -170,4 +167,34 @@ def generate_launch_description():
         ros_gz_bridge,
         world_broadcaster,
         pandora_control_launch,
+    ]
+
+
+def generate_launch_description():
+    pandora_description_share = FindPackageShare('pandora_description')
+    pandora_gazebo_share = FindPackageShare('pandora_gazebo')
+    pandora_control_share = FindPackageShare('pandora_control')
+
+    generate_controllers_yaml(
+        os.path.join(
+            get_package_share_directory('pandora_control'), 'config',
+            'pandora_controllers.yaml'))
+
+    declare_args = [
+        DeclareLaunchArgument('x', default_value='0'),
+        DeclareLaunchArgument('y', default_value='0'),
+        DeclareLaunchArgument('z', default_value='0.4'),
+        DeclareLaunchArgument('yaw', default_value='1.5708'),
+        DeclareLaunchArgument('gui', default_value='true'),
+        DeclareLaunchArgument('paused', default_value='false'),
+        DeclareLaunchArgument(
+            'world', default_value='flat',
+            choices=list(WORLDS.keys()),
+            description="'flat' (flat ground, default) or 'sinusoidal' (sinusoidal terrain)"),
+    ]
+
+    return LaunchDescription(declare_args + [
+        OpaqueFunction(
+            function=launch_setup,
+            args=[pandora_description_share, pandora_gazebo_share, pandora_control_share]),
     ])

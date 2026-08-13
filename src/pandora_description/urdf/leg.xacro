@@ -26,7 +26,7 @@
 				<!-- <mesh filename="package://pandora_description/meshes/${frame}.dae" scale="1 1 1"/>  -->
 				<box size="${frame_x} ${frame_y} ${frame_z} "/>
 		  	</geometry>	
-			<material name="blue">
+			<material name="Gazebo/blue">
 				<color rgba="0.0 0.0 0.8 1.0"/>
 			</material>
 		</visual>
@@ -64,7 +64,7 @@
 				<!-- <mesh filename="package://pandora_description/meshes/${crank}.dae" scale="1 1 1"/>	 -->
 				<box size="${crank_x} ${crank_y} ${crank_z} "/>
 		  	</geometry>
-			<material name="red">
+			<material name="Gazebo/Gazebo/red">
 				<color rgba="0.8 0.0 0.0 1.0"/>
 			</material>
 		</visual>
@@ -102,7 +102,7 @@
 				<!-- <mesh filename="package://pandora_description/meshes/${coupler}.dae" scale="0.625 0.625 0.625"/> -->
 				<box size="${coupler_x} ${coupler_y} ${coupler_z} "/>
 		  	</geometry>
-			<material name="blue">
+			<material name="Gazebo/blue">
 				<color rgba="0.0 0.0 0.8 1.0"/>
 			</material>
 		</visual>
@@ -139,7 +139,7 @@
 				<!-- <mesh filename="package://pandora_description/meshes/${rocker}.dae" scale="0.625 0.625 0.625"/> -->
 				<box size="${rocker_x} ${rocker_y} ${rocker_z}"/>
 		  	</geometry>	
-			<material name="red">
+			<material name="Gazebo/red">
 				<color rgba="0.8 0.0 0.0 1.0"/>
 			</material>
 		</visual>
@@ -299,8 +299,8 @@
 	</ros2_control>
 	
 	<gazebo reference="my_box_link">
-		<material>Gazebo/Blue</material>
-		<material>Gazebo/Red</material>
+		<material>Gazebo/Gazebo/blue</material>
+		<material>Gazebo/Gazebo/red</material>
 	</gazebo>
 
 </xacro:macro>

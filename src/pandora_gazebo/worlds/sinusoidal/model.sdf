@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+    <model name="terrain">
+        <static>true</static>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <mesh>
+                        <uri>model://sinusoidal/mesh/terrain.stl</uri>
+                    </mesh>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <mesh>
+                        <uri>model://sinusoidal/mesh/terrain.obj</uri>
+                    </mesh>
+                </geometry>
+                <material>
+                    <ambient>1.0 1.0 1.0 1</ambient>
+                    <diffuse>1.0 1.0 1.0 1</diffuse>
+                    <specular>0.1 0.1 0.1 1</specular>
+                    <pbr>
+                        <metal>
+                            <albedo_map>model://sinusoidal/texture/clay_albedo.png</albedo_map>
+                            <normal_map>model://sinusoidal/texture/clay_normal.png</normal_map>
+                            <roughness_map>model://sinusoidal/texture/clay_roughness.png</roughness_map>
+                            <metalness>0.0</metalness>
+                        </metal>
+                    </pbr>
+                </material>
+            </visual>
+        </link>
+    </model>
+</sdf>

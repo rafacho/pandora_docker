@@ -18,7 +18,7 @@
 	<xacro:property name="base_x" value="0.75" /> 		<!-- "0.45"value in x axis -->
 	<xacro:property name="base_y" value="0.25" />		<!-- value in y axis -->
 	<xacro:property name="base_z" value="0.01" /> 	<!-- value in z axis -->
-	<xacro:property name="base_axel_offset" value="0.02" /><!-- Space btw top of beam and the each joint -->
+	<!-- <xacro:property name="base_axel_offset" value="0.02" />Space btw top of beam and the each joint -->
 	
 	<!-- Frame -->
 	<xacro:property name="frame" value="frame" />

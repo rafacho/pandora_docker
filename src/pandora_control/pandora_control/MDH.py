@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-# ROS2 port note (2026-08-04): this module has no ROS-specific dependencies
-# (it's a plain numpy kinematics library imported by ik_server.py), so the
-# only change from the ROS1 version is dropping unused/dead imports that were
-# never referenced anywhere in this file: `rospy` (not a single rospy.* call
-# below), and `pyexpat.errors`/`turtle`/`xml.dom` (stray editor auto-imports --
-# `turtle` in particular pulls in tkinter, which isn't guaranteed to be
-# installed in a headless container and has no reason to be a dependency of a
-# kinematics module).
 import numpy as np
 
 from mpl_toolkits import mplot3d
@@ -91,8 +82,8 @@ def initRobot():
     l = 0.3 # largura do chassi
     h = 0.1 # altura do chassi
 
-    legLenght = 0.28125
-    legHeight = 0.10625
+    legLenght = 0.3
+    legHeight = 0.1
 
     #################################################
 
@@ -470,6 +461,13 @@ class robotModel:
 
             ax.plot(xs, ys, zs)
 
+        # Without this, matplotlib scales each 3D axis independently to fit
+        # that call's data range -- so the same real-world distance between
+        # two points looks different from one plotPose() call to the next as
+        # the leg pose (and thus the plotted extent) changes, even though
+        # nothing in the kinematics actually moved.
+        ax.set_box_aspect((1, 1, 1))
+
         plt.show()
 
     def contacts(self, pose):
@@ -540,7 +538,8 @@ class robotModel:
         desiredBasePose[0][2] = 0 # yaw
         desiredBasePose[1][0] = 0 # x
         desiredBasePose[1][1] = 0 # y
-        print('zError: ', desiredBasePose[1][2] - currentBasePose[1][2])
+
+            
 
         currentPose = self.setState(currentBasePose, currentLegAngles, kinematicTree)
         supportPlane = self.findSupportPlane(currentPose)
@@ -556,55 +555,75 @@ class robotModel:
         br = 0
         hmax = 0.368
 
-        distBasePlane = self.distanceToPlane(desiredBasePose[1], supportPlane)
-        if distBasePlane > hmax:
+        zError = desiredBasePose[1][2] - currentBasePose[1][2]
+        if zError >= hmax:
+            desiredBasePose[1][2] = hmax
             print('************* Set Point z limit exceeded ***************')
-            success = False
-            for angle in range(4):
-                jointAngles.append(-np.pi/4)
-        else:
+            print('z changed to:', hmax)
 
-            while max(error.values()) >= tolerance:
-                dist = []
-                if error['teta11'] >= tolerance:
-                    legAngles['teta11'] = (angleMin['teta11'] + angleMax['teta11'])/2
-                if error['teta21'] >= tolerance:
-                    legAngles['teta21'] = (angleMin['teta21'] + angleMax['teta21'])/2
-                if error['teta31'] >= tolerance:
-                    legAngles['teta31'] = (angleMin['teta31'] + angleMax['teta31'])/2
-                if error['teta41'] >= tolerance:
-                    legAngles['teta41'] = (angleMin['teta41'] + angleMax['teta41'])/2
+        # distBasePlane = self.distanceToPlane(desiredBasePose[1], supportPlane)
+        # if distBasePlane > hmax:
+        #     print('************* Set Point z limit exceeded ***************')
+        #     success = False
+        #     for angle in range(4):
+        #         jointAngles.append(-np.pi/4)
+           
+        #     legAngles = {
+        #         'teta11': jointAngles[0], 'teta21': jointAngles[1],
+        #         'teta31': jointAngles[2], 'teta41': jointAngles[3],
+        #     }
+        #     # print('desiredBasePose', desiredBasePose)
+        #     # print('supportPlane', supportPlane)
+        #     # pose = self.setState(desiredBasePose, legAngles, kinematicTree)
+        #     # newSupportPlane = self.findSupportPlane(pose)
+        #     # print('newSupportPlane', newSupportPlane)
+        #     # distBasePlane = self.distanceToPlane(pose, supportPlane)
+        #     # zDiff = desiredBasePose[1][2] - newSupportPlane[0][2]
+        #     # desiredBasePose[1][2] -= zDiff
+        #     # print('**desiredBasePose changed to:', desiredBasePose)
+        # else:
 
-                pose = self.setState(desiredBasePose, legAngles, kinematicTree)
-                contacts = self.contacts(pose)
+        while max(error.values()) >= tolerance:
+            dist = []
+            if error['teta11'] >= tolerance:
+                legAngles['teta11'] = (angleMin['teta11'] + angleMax['teta11'])/2
+            if error['teta21'] >= tolerance:
+                legAngles['teta21'] = (angleMin['teta21'] + angleMax['teta21'])/2
+            if error['teta31'] >= tolerance:
+                legAngles['teta31'] = (angleMin['teta31'] + angleMax['teta31'])/2
+            if error['teta41'] >= tolerance:
+                legAngles['teta41'] = (angleMin['teta41'] + angleMax['teta41'])/2
 
-                for l in range(4):
-                    contactPoint = contacts[l]
-                    dist.append(self.distanceToPlane(contactPoint, supportPlane))
+            pose = self.setState(desiredBasePose, legAngles, kinematicTree)
+            contacts = self.contacts(pose)
 
-                distDic = {'teta11': dist[0], 'teta21': dist[1], 'teta31': dist[2], 'teta41': dist[3]}
+            for l in range(4):
+                contactPoint = contacts[l]
+                dist.append(self.distanceToPlane(contactPoint, supportPlane))
 
-                for leg in distDic:
-                    if distDic[leg] >= 0:
-                        angleMax[leg] = legAngles[leg]
-                    else:
-                        angleMin[leg] = legAngles[leg]
+            distDic = {'teta11': dist[0], 'teta21': dist[1], 'teta31': dist[2], 'teta41': dist[3]}
 
-                error = {'teta11': abs(dist[0]), 'teta21': abs(dist[1]), 'teta31': abs(dist[2]), 'teta41': abs(dist[3])}
-
-                if br>25:
-                    print('break:')
-                    print('error:', error)
-                    print('basePose', currentBasePose)
-                    print('-----------------------------')
-                    success = False
-                    break
+            for leg in distDic:
+                if distDic[leg] >= 0:
+                    angleMax[leg] = legAngles[leg]
                 else:
-                    success = True
-                br = br + 1
+                    angleMin[leg] = legAngles[leg]
 
-            for angle in legAngles:
-                jointAngles.append(legAngles[angle])
+            error = {'teta11': abs(dist[0]), 'teta21': abs(dist[1]), 'teta31': abs(dist[2]), 'teta41': abs(dist[3])}
+
+            if br>25:
+                print('break:')
+                print('error:', error)
+                print('basePose', currentBasePose)
+                print('-----------------------------')
+                success = False
+                break
+            else:
+                success = True
+            br = br + 1
+
+            for leg in legAngles:
+                jointAngles.append(legAngles[leg])
 
         return {'success': success, 'joint_cmd_angles': jointAngles}
 

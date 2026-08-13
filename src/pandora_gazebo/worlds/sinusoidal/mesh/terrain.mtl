@@ -1,0 +1,5 @@
+# Terrain material - Forest3D
+newmtl terrain_material
+Ka 1.0 1.0 1.0
+Kd 1.0 1.0 1.0
+Ks 0.1 0.1 0.1

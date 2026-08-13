@@ -8,9 +8,9 @@ from rclpy.executors import MultiThreadedExecutor
 import numpy as np
 
 from std_msgs.msg import Float64MultiArray
-from custom_messages.msg import CustomCmnd
-from pandora_msgs.srv import IkSrv
-from pandora_msgs.msg import HrefCommand
+from custom_messages.msg import CustomCmnd #type: ignore
+from pandora_msgs.srv import IkSrv #type: ignore
+from pandora_msgs.msg import HrefCommand #type: ignore
 
 
 class HandleControl(Node):
@@ -33,6 +33,10 @@ class HandleControl(Node):
         self.commandedPose = np.asarray([])
         self.currentState = []
         self.jointSuccess = False
+        # Cache for the last IK result -- see inverse_kinematics_client()'s
+        # note on why this is filled asynchronously instead of blocking.
+        self.lastJointAngles = [-0.2454, -0.2454, -0.2454, -0.2454]
+        self.ikRequestPending = False
 
         self.pastTime = self.get_clock().now()
         self.errorAnglesIntegral = np.asarray([0, 0, 0], dtype='float64')
@@ -42,6 +46,8 @@ class HandleControl(Node):
         self.pastErrorPositions = np.asarray([0, 0, 0], dtype='float64')
 
         self.create_timer(1.0 / 25.0, self.run, callback_group=callback_group)
+
+        self.get_logger().info("h_control init complete")
 
     def handleImu(self, imuMsg):
         self.currentState = np.asarray(imuMsg.data)
@@ -123,37 +129,55 @@ class HandleControl(Node):
         self.pastErrorPositions = errorPositions
 
     def inverse_kinematics_client(self, set_point):
-        if not self.ikClient.wait_for_service(timeout_sec=1.0):
-            self.get_logger().error("Service call failed: /inverse_kinematics not available")
-            return None
+        # rclpy.spin_until_future_complete(self, ...) deadlocks here: this
+        # method runs from run(), a timer callback already being serviced by
+        # the MultiThreadedExecutor spinning this same node in main() --
+        # nesting a second blocking spin on a node an executor already owns
+        # hangs forever (it never times out, so no error ever gets logged;
+        # publish() in run() is simply never reached again). Fixed by firing
+        # the request asynchronously and picking up the result later via
+        # handleIkResponse(), instead of blocking run() on it.
+        if self.ikRequestPending or not self.ikClient.service_is_ready():
+            return
 
+        self.ikRequestPending = True
         request = IkSrv.Request()
         request.pose_set_point = [float(v) for v in set_point]
         future = self.ikClient.call_async(request)
-        rclpy.spin_until_future_complete(self, future, timeout_sec=1.0)
-        if not future.done() or future.exception() is not None:
+        future.add_done_callback(self.handleIkResponse)
+
+    def handleIkResponse(self, future):
+        self.ikRequestPending = False
+        if future.exception() is not None:
             self.get_logger().error("Service call failed: %s" % future.exception())
-            return None
-        return future.result()
+            return
+        response = future.result()
+        self.lastJointAngles = response.joint_cmd_angles
+        self.jointSuccess = response.success
 
     def jointControl(self, baseSetPoint):
         jointSetPoint = CustomCmnd()
 
         baseSetPoint = np.asarray(baseSetPoint)
-        if baseSetPoint.size == 0:
-            cmdAngles = IkSrv.Response()
-            cmdAngles.success = False
-            cmdAngles.joint_cmd_angles = [-0.2454, -0.2454, -0.2454, -0.2454]
+        if baseSetPoint.size != 0:
+            # Kicks off an async request when none is in flight; the result
+            # (if any) lands in self.lastJointAngles via handleIkResponse()
+            # some future cycle, not this one -- see inverse_kinematics_client().
+            self.inverse_kinematics_client(baseSetPoint)
 
-        else:
-            cmdAngles = self.inverse_kinematics_client(baseSetPoint)
+        jointSetPoint.position = self.lastJointAngles
 
-        # FIXME(ros2-port): cmdAngles is None whenever the IK service call
-        # fails/times out, and that's never checked here -- unhandled
-        # AttributeError. Ported unchanged per the "preserve control-law bugs,
-        # fix later" decision -- see code review 2026-08-04.
-        jointSetPoint.position = cmdAngles.joint_cmd_angles
-        self.jointSuccess = cmdAngles.success
+        # ActuatorPositionController::setCommand() (custom_controller) replaces
+        # its whole command_struct_ with whatever arrives on this topic, then
+        # indexes velocity/effort/online_gain1/online_gain2 with operator[]
+        # (unchecked) in update() -- leaving these at CustomCmnd's default
+        # empty array is an out-of-bounds read on the controller side, not a
+        # no-op. Must be sized to match position on every publish.
+        num_joints = len(jointSetPoint.position)
+        jointSetPoint.velocity = [0.0] * num_joints
+        jointSetPoint.effort = [0.0] * num_joints
+        jointSetPoint.online_gain1 = [0.0] * num_joints
+        jointSetPoint.online_gain2 = [0.0] * num_joints
 
         return jointSetPoint
 

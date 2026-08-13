@@ -37,7 +37,7 @@ DEFAULT_SEA = {
     'D': 2.0,  # Nms/rad
     'Bm': 0.0000252,
     'phim': 0.0000512,
-    'nu': 60,
+    'nu': 160,
     'Torque_limit': 304.0,  # Nm
 }
 

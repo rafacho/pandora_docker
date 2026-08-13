@@ -53,7 +53,7 @@ position_controller:
         D: 2.0
         Bm: 2.52e-05
         phim: 5.12e-05
-        nu: 60
+        nu: 160
         Torque_limit: 304.0
       joint_frame_crank_2:
         type: SEA
@@ -61,7 +61,7 @@ position_controller:
         D: 2.0
         Bm: 2.52e-05
         phim: 5.12e-05
-        nu: 60
+        nu: 160
         Torque_limit: 304.0
       joint_frame_crank_3:
         type: SEA
@@ -69,7 +69,7 @@ position_controller:
         D: 2.0
         Bm: 2.52e-05
         phim: 5.12e-05
-        nu: 60
+        nu: 160
         Torque_limit: 304.0
       joint_frame_crank_4:
         type: SEA
@@ -77,7 +77,7 @@ position_controller:
         D: 2.0
         Bm: 2.52e-05
         phim: 5.12e-05
-        nu: 60
+        nu: 160
         Torque_limit: 304.0
 velocity_controller:
   ros__parameters:
