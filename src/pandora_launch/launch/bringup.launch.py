@@ -1,38 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ROS2 port note (2026-08-04): replaces the ROS1 pandora_launch/bringup.launch
-# (roslaunch XML). Brings up Gazebo Sim, publishes robot_description from
-# pandora.xacro, spawns the robot (ros_gz_sim create instead of
-# gazebo_ros/spawn_model), bridges the sensor/pose topics declared in
-# pandora_gazebo's plugins to ROS2, and starts world_broadcaster (which turns
-# the bridged pose into the "odom"->"dummy" TF). Controller loading itself
-# lives in pandora_control's launch file, included at the bottom, mirroring
-# the ROS1 package split.
-#
-# DEBUG (2026-08-06): world_file now points at pandora_gazebo's
-# test_world.world (PGS solver + ODE collision detector configured, per the
-# DetachableJoint/four-bar-loop investigation) instead of pandora.world or
-# gz-sim's bundled empty.sdf.
-#
-# Config note (2026-08-10): pandora_controllers.yaml is (re)generated from
-# pandora_control/generate_controllers_yaml.py right below, before gz_sim is
-# included -- gz_ros2_control reads that file's resolved path straight from
-# pandora.gazebo's <parameters> tag as soon as gzserver starts, so it has to
-# exist with up-to-date content before that point. See that module for why
-# (ROS2's parameter YAML parser doesn't support anchors/aliases, so the
-# per-joint gain/SEA-constant duplication can't be avoided in the YAML
-# itself).
-#
-# Terrain note (2026-08-11): added the "world" launch arg to pick between
-# test_world.world (default, flat ground, the world every controller/gain
-# test in this project has been validated against) and
-# worlds/senoidal/senoidal.world (sinusoidal terrain, ~50x50m, 0-0.15m
-# elevation). Resolved via OpaqueFunction instead of PythonExpression string
-# concatenation -- world_file and the spawn "-world" name both depend on
-# which world is picked, and building that as a single conditional string
-# substitution gets fragile fast.
-
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -79,16 +47,6 @@ def launch_setup(context, pandora_description_share, pandora_gazebo_share, pando
     gui = LaunchConfiguration('gui')
     paused = LaunchConfiguration('paused')
 
-    # "model://heightmap"/"model://senoidal" (used by pandora.world and
-    # senoidal.world respectively) resolve via this env var (Gazebo Sim's
-    # replacement for Gazebo Classic's GAZEBO_MODEL_PATH). It also has to
-    # include pandora_description's share *parent* dir, or the GUI can't
-    # resolve the "package://pandora_description/meshes/..." mesh URIs used by
-    # leg.xacro's <visual> elements (gz-sim has no ROS ament_index-aware
-    # package:// resolver of its own, it falls back to searching each
-    # GZ_SIM_RESOURCE_PATH entry for a "pandora_description/..." subpath,
-    # exactly like it does for "model://" URIs). Still needed with
-    # test_world.world, since the robot model itself uses those mesh URIs.
     set_resource_path = SetEnvironmentVariable(
         'GZ_SIM_RESOURCE_PATH',
         [

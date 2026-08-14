@@ -24,8 +24,8 @@ class KinematicsWrapper(Node):
     def __init__(self):
         super().__init__('kinematic_model')
 
-        robotParam = MDH.initRobot()
-        self.robot = MDH.robotModel(*robotParam)
+        robotParam = MDH.init_robot()
+        self.robot = MDH.RobotModel(*robotParam)
 
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
@@ -69,10 +69,10 @@ class KinematicsWrapper(Node):
         terrainProfile.header.stamp = self.get_clock().now().to_msg()
 
         currentlegAngles = {
-            'teta11': self.robot.angles[0], 'teta21': self.robot.angles[1],
-            'teta31': self.robot.angles[2], 'teta41': self.robot.angles[3]}
-        currentBasePose = self.robot.imuPose
-        pose = self.robot.setState(currentBasePose, currentlegAngles, self.robot.resetKinematicTree)
+            'theta11': self.robot.angles[0], 'theta21': self.robot.angles[1],
+            'theta31': self.robot.angles[2], 'theta41': self.robot.angles[3]}
+        currentBasePose = self.robot.imu_pose
+        pose = self.robot.set_state(currentBasePose, currentlegAngles, self.robot.reset_kinematic_tree)
         contacts = self.robot.contacts(pose)
 
         for row in contacts:
@@ -128,17 +128,12 @@ class KinematicsWrapper(Node):
         desiredBasePose = np.array([[roll, pitch, yaw], [x, y, z]])
 
         currentlegAngles = {
-            'teta11': self.robot.angles[0], 'teta21': self.robot.angles[1],
-            'teta31': self.robot.angles[2], 'teta41': self.robot.angles[3]}
-        # FIXME(ros2-port): self.robot.imuPose is passed by reference and mutated
-        # in place inside MDH.inverseKinematics (zeroes yaw/x/y), so this call
-        # silently resets the stored IMU pose every time the service is called.
-        # Ported unchanged per the "preserve control-law bugs, fix later"
-        # decision -- see code review 2026-08-04.
-        currentBasePose = self.robot.imuPose
+            'theta11': self.robot.angles[0], 'theta21': self.robot.angles[1],
+            'theta31': self.robot.angles[2], 'theta41': self.robot.angles[3]}
+        currentBasePose = self.robot.imu_pose
 
-        ik = self.robot.inverseKinematics(
-            currentlegAngles, currentBasePose, desiredBasePose, self.robot.resetKinematicTree)
+        ik = self.robot.inverse_kinematics(
+            currentlegAngles, currentBasePose, desiredBasePose, self.robot.reset_kinematic_tree)
 
         response.success = ik['success']
         response.joint_cmd_angles = [float(a) for a in ik['joint_cmd_angles']]
@@ -167,7 +162,7 @@ class KinematicsWrapper(Node):
         y = round(t.y, 3)
         z = round(t.z, 3)
 
-        self.robot.imuPose = np.array([[roll, pitch, yaw], [x, y, z]])
+        self.robot.imu_pose = np.array([[roll, pitch, yaw], [x, y, z]])
 
         self.arrayImu.data.append(roll)
         self.arrayImu.data.append(pitch)

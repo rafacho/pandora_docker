@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ROS2 port note (2026-08-04): the ROS1 version polled the Gazebo Classic
-# "/gazebo/get_link_state" service (gazebo_msgs/GetLinkState), which has no
-# Gazebo Sim / ros_gz equivalent -- there is no such service in ros_gz_bridge.
-# Redesigned to subscribe to a topic instead: pandora_gazebo/urdf/pandora.gazebo
-# adds a gz-sim-pose-publisher-system plugin that publishes the "pandora"
-# model's root-link ("dummy") pose on a gz-transport topic, which
-# pandora_launch bridges to ROS2 as geometry_msgs/msg/Pose on /model/pandora/pose.
-# This node just republishes that as the "odom" -> "dummy" TF the rest of the
-# stack expects (robot_state_publisher fills in "dummy" -> "base_link" and
-# below from the URDF's fixed/revolute joints).
-
 import rclpy
 from rclpy.node import Node
 
@@ -25,7 +14,7 @@ class WorldBroadcaster(Node):
         super().__init__('world_broadcaster')
 
         self.br = tf2_ros.TransformBroadcaster(self)
-        self.create_subscription(Pose, '/model/pandora/pose', self.handle_pose, 1)
+        self.create_subscription(Pose, '/pandora/pose', self.handle_pose, 1)
 
     def handle_pose(self, pose):
         t = geometry_msgs.msg.TransformStamped()

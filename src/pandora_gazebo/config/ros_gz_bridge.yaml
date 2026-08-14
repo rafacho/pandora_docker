@@ -36,8 +36,9 @@
 # Root-link ("dummy") world pose, published by the gz-sim-pose-publisher-system
 # plugin in pandora.gazebo; consumed by pandora_control's world_broadcaster
 # node to re-publish it as the "odom"->"dummy" TF.
-- ros_topic_name: "/model/pandora/pose"
-  gz_topic_name: "/model/pandora/pose"
+
+- ros_topic_name: "/pandora/pose"
+  gz_topic_name: "/pandora/pose"
   ros_type_name: "geometry_msgs/msg/Pose"
   gz_type_name: "gz.msgs.Pose"
   direction: GZ_TO_ROS

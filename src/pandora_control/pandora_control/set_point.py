@@ -3,7 +3,7 @@
 
 import rclpy
 from rclpy.node import Node
-from pandora_msgs.msg import HrefCommand
+from pandora_msgs.msg import HrefCommand #type: ignore
 import numpy as np
 
 import tf2_ros
@@ -45,7 +45,7 @@ def set_point():
         t = trans.transform.translation
         x = round(t.x, 3)
         y = round(t.y, 3)
-        z = 0.2
+        z = 0.3
 
         sp.position = [
             float(roll),
