@@ -23,15 +23,15 @@ class HandleControl(Node):
     def __init__(self):
         super().__init__('pose_control')
 
-        self.pubJointCommand = self.create_publisher(CustomCmnd, '/position_controller/command', 1)
-        self.get_logger().info("publisher /position_controller/command is ready")
+        self.pubJointCommand = self.create_publisher(CustomCmnd, 'leg_controller/command', 1)
+        self.get_logger().info("publisher leg_controller/command is ready")
 
         self.create_subscription(
-            HrefCommand, '/pose_controller/command', self.handlePoseCommand, 1)
+            HrefCommand, 'pose_controller/command', self.handlePoseCommand, 1)
 
-        self.create_subscription(Float64MultiArray, '/pandora/imuPose', self.handleImu, 1)
+        self.create_subscription(Float64MultiArray, 'imuPose', self.handleImu, 1)
 
-        self.ikClient = self.create_client(IkSrv, '/inverse_kinematics')
+        self.ikClient = self.create_client(IkSrv, 'inverse_kinematics')
 
         self.commandedPose = np.asarray([])
         self.currentState = []

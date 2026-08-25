@@ -11,7 +11,7 @@ PI = 3.1415926535897
 class WheelControl(Node):
     def __init__(self):
         super().__init__('move_wheels')
-        self.wheel_command = self.create_publisher(TwistStamped, '/velocity_controller/cmd_vel', 1)
+        self.wheel_command = self.create_publisher(TwistStamped, 'wheel_controller/cmd_vel', 1)
         self.create_timer(1.0 / 25.0, self.run)
 
     def run(self):

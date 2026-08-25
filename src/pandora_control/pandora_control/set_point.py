@@ -14,7 +14,7 @@ def set_point():
     rclpy.init()
     node = Node('pose_sp')
 
-    Href_command = node.create_publisher(HrefCommand, '/pose_controller/command', 1)
+    Href_command = node.create_publisher(HrefCommand, 'pose_controller/command', 1)
     rate_hz = 3.0  # dar tempo do controlador ler
 
     tfBuffer = tf2_ros.Buffer()

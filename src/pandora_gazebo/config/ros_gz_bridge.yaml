@@ -4,7 +4,16 @@
 # Classic plugins (libgazebo_ros_bumper.so, libgazebo_ros_imu_sensor.so) that
 # used to publish these directly as ROS topics themselves.
 #
-# Fix (2026-08-25): the contact sensors' gz_topic_name below contains the
+# Fix (2026-08-25): ros_topic_name below is relative (no leading "/") for
+# every entry except /clock. This parameter_bridge Node runs inside
+# bringup.launch.py's PushRosNamespace(namespace) group, so a relative name
+# resolves under that namespace (e.g. "contacts_1" -> "/pandora/contacts_1")
+# the same way any other ROS2 node's relative topic would -- an absolute
+# name (leading "/") would instead bypass the namespace entirely, which is
+# exactly why /clock (the simulation-wide clock every use_sim_time node
+# needs, in or out of this namespace) is kept absolute on purpose.
+#
+# Older fix note (2026-08-25): the contact sensors' gz_topic_name below contains the
 # literal placeholder __WORLD__, NOT the actual world name -- this file is a
 # template. bringup.launch.py's launch_setup() substitutes __WORLD__ with
 # whichever world was picked (the 'world' launch arg -> flat/sinusoidal) and
@@ -17,31 +26,31 @@
 # topic /world/<world>/model/pandora/link/wheel_N/sensor/wheel_N_contact_sensor/contact
 # (confirmed empirically via `gz topic -i`) -- so the bridge has to target
 # that exact path instead of the /pandora/contacts_N the SDF declares.
-- ros_topic_name: "/pandora/contacts_1"
+- ros_topic_name: "contacts_1"
   gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_1/sensor/wheel_1_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/pandora/contacts_2"
+- ros_topic_name: "contacts_2"
   gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_2/sensor/wheel_2_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/pandora/contacts_3"
+- ros_topic_name: "contacts_3"
   gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_3/sensor/wheel_3_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/pandora/contacts_4"
+- ros_topic_name: "contacts_4"
   gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_4/sensor/wheel_4_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/imu"
+- ros_topic_name: "imu"
   gz_topic_name: "/imu"
   ros_type_name: "sensor_msgs/msg/Imu"
   gz_type_name: "gz.msgs.IMU"
@@ -51,7 +60,7 @@
 # plugin in pandora.gazebo; consumed by pandora_control's world_broadcaster
 # node to re-publish it as the "odom"->"dummy" TF.
 
-- ros_topic_name: "/pandora/pose"
+- ros_topic_name: "pose"
   gz_topic_name: "/pandora/pose"
   ros_type_name: "geometry_msgs/msg/Pose"
   gz_type_name: "gz.msgs.Pose"

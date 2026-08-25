@@ -13,6 +13,23 @@
             <visualize>true</visualize>
             <topic>imu</topic>
             <pose>0 0 0 0 0 0</pose>
+            <!-- Fix (2026-08-25): without this, gz-sim's Imu system defaults
+                 to reporting orientation relative to the sensor's own pose
+                 at spawn time (confirmed in gz-sim's Imu.cc: "otherwise
+                 orientations are reported w.r.t to the initial orientation"),
+                 not the world frame. ik_server.py's forward-kinematics
+                 support polygon (/pandora/support_polygon) feeds that yaw
+                 straight into its base pose, so it matched
+                 real_support_polygon.py's TF/physics-based polygon only when
+                 the robot spawned at yaw=0; any other spawn yaw left the
+                 two polygons offset by exactly that angle. ENU pins yaw=0 to
+                 the world's true X axis instead of wherever the robot
+                 happened to be pointing at spawn. -->
+            <imu>
+                <orientation_reference_frame>
+                    <localization>ENU</localization>
+                </orientation_reference_frame>
+            </imu>
         </sensor>
     </gazebo>
 </robot>

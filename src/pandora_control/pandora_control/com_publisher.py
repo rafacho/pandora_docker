@@ -58,10 +58,10 @@ class ComPublisher(Node):
             durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
         )
         self.create_subscription(
-            String, '/robot_description', self.handle_robot_description, robot_description_qos)
+            String, 'robot_description', self.handle_robot_description, robot_description_qos)
 
-        self.pub = self.create_publisher(Marker, '/pandora/com', 1)
-        self.get_logger().info("publisher /pandora/com is ready")
+        self.pub = self.create_publisher(Marker, 'com', 1)
+        self.get_logger().info("publisher com is ready")
 
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)

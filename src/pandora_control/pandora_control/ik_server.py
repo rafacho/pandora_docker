@@ -30,11 +30,11 @@ class KinematicsWrapper(Node):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
-        self.create_subscription(Imu, '/imu', self.handle_imu, 1)
+        self.create_subscription(Imu, 'imu', self.handle_imu, 1)
         self.create_subscription(
-            JointState, '/position_controller/state', self.handle_leg_angles, 1)
+            JointState, 'leg_controller/state', self.handle_leg_angles, 1)
 
-        self.create_service(IkSrv, '/inverse_kinematics', self.handle_inverse_kinematics)
+        self.create_service(IkSrv, 'inverse_kinematics', self.handle_inverse_kinematics)
         self.get_logger().info("handle_inverse_kinematics is Ready")
 
         self.valuePolygon = PolygonStamped()
@@ -42,18 +42,18 @@ class KinematicsWrapper(Node):
         self.arrayImu = Float64MultiArray()
         self.valueTerrain = PolygonStamped()
 
-        self.pubPolygon = self.create_publisher(PolygonStamped, '/pandora/support_polygon', 1)
-        self.get_logger().info("publisher /pandora/support_polygon is ready")
+        self.pubPolygon = self.create_publisher(PolygonStamped, 'support_polygon', 1)
+        self.get_logger().info("publisher support_polygon is ready")
 
-        self.pubTerrain = self.create_publisher(PolygonStamped, '/pandora/terrain_profile', 1)
-        self.get_logger().info("publisher /pandora/terrain_profile is ready")
+        self.pubTerrain = self.create_publisher(PolygonStamped, 'terrain_profile', 1)
+        self.get_logger().info("publisher terrain_profile is ready")
 
         self.pubCentroid = self.create_publisher(
-            PointStamped, '/pandora/support_polygon/centroid', 1)
-        self.get_logger().info("publisher /pandora/support_polygon/centroid is ready")
+            PointStamped, 'support_polygon/centroid', 1)
+        self.get_logger().info("publisher support_polygon/centroid is ready")
 
-        self.pubImuPose = self.create_publisher(Float64MultiArray, '/pandora/imuPose', 1)
-        self.get_logger().info("publisher /pandora/imuPose is ready")
+        self.pubImuPose = self.create_publisher(Float64MultiArray, 'imuPose', 1)
+        self.get_logger().info("publisher imuPose is ready")
 
         self.create_timer(1.0 / 25.0, self.run)
 

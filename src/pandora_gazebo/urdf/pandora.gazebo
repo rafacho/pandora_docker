@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 <robot name="pandora" xmlns:xacro="http://www.ros.org/wiki/xacro">
+	<!-- Namespace fed from bringup.launch.py's 'namespace' launch arg (see
+	     the Command(['xacro ', ..., ' namespace:=', namespace]) call there),
+	     defaulted here so this file still processes standalone (e.g. via
+	     xacro_to_sdf.sh) without that arg. Single source of truth for the
+	     controller_manager namespace below; keep it in sync with the
+	     PushRosNamespace wrapping the rest of the ROS graph in bringup, not
+	     hardcoded independently. -->
+	<xacro:arg name="namespace" default="pandora"/>
+
 	<!-- ROS2 port note (2026-08-04): the two ROS1/Gazebo-Classic plugins that used
 	     to live here are both superseded under ros2_control + Gazebo Sim:
 	     - libgazebo_ros_joint_state_publisher.so is replaced by the standard
@@ -12,6 +21,16 @@
 	<gazebo>
 		<plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
 			<parameters>$(find pandora_control)/config/pandora_controllers.yaml</parameters>
+			<!-- Fix (2026-08-25): without this, controller_manager (and every
+			     controller/topic it hosts: /joint_states,
+			     /leg_controller/command, /wheel_controller/cmd_vel,
+			     ...) runs in the global namespace regardless of anything
+			     done in bringup.launch.py's Python launch actions, since
+			     this plugin is started by Gazebo itself, not by the ROS2
+			     launch system; PushRosNamespace has no effect on it. -->
+			<ros>
+				<namespace>$(arg namespace)</namespace>
+			</ros>
 		</plugin>
 	</gazebo>
 

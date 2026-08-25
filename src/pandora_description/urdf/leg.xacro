@@ -203,7 +203,7 @@
 		     (see the base_link->frame joint's rpy sign flip above and the
 		     outer rotz=PI passed for legs 3/4 in pandora.xacro), so the same
 		     local "0 0 1" axis ends up pointing the opposite way in world
-		     frame for the rear wheels. Without this flip, velocity_controller
+		     frame for the rear wheels. Without this flip, wheel_controller
 		     driving all 4 wheels with the same-sign command spun the front
 		     and rear wheels in opposite directions (confirmed visually). -->
 		<xacro:if value="${leg_num == 1 or leg_num == 2}">
@@ -300,6 +300,18 @@
 			<state_interface name="velocity"/>
 		</joint>
 		<joint name="joint_${frame}_${rocker}_${leg_num}">
+			<state_interface name="position"/>
+			<state_interface name="velocity"/>
+		</joint>
+		<!-- Fix (2026-08-25): passive joint, like frame_rocker above; its
+		     actual angle is dictated by the 4-bar loop closure (the
+		     gz-sim-detachable-joint-system plugin welding dummy_link_N to
+		     rocker_N in physics), not by any command_interface here. Without
+		     a state_interface, joint_state_broadcaster never published this
+		     joint's angle to /joint_states, so robot_state_publisher kept
+		     dummy_link_N's TF frozen at the URDF default instead of tracking
+		     the real physics-driven pose. -->
+		<joint name="joint_${coupler}_dummy_link_${leg_num}">
 			<state_interface name="position"/>
 			<state_interface name="velocity"/>
 		</joint>

@@ -2,19 +2,19 @@
 # edit this file by hand, it is overwritten on every bringup.launch.py run.
 # Edit the DEFAULT_GAINS/DEFAULT_SEA/GAIN_OVERRIDES/SEA_OVERRIDES dicts in
 # that module instead.
-controller_manager:
+/pandora/controller_manager:
   ros__parameters:
     update_rate: 4000
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
-    position_controller:
+    leg_controller:
       type: custom_controller/ActuatorPositionController
-    velocity_controller:
+    wheel_controller:
       type: diff_drive_controller/DiffDriveController
-joint_state_broadcaster:
+/pandora/joint_state_broadcaster:
   ros__parameters:
     use_local_topics: false
-position_controller:
+/pandora/leg_controller:
   ros__parameters:
     dof: 4
     controller_update: 1
@@ -79,7 +79,7 @@ position_controller:
         phim: 5.12e-05
         nu: 160
         Torque_limit: 304.0
-velocity_controller:
+/pandora/wheel_controller:
   ros__parameters:
     left_wheel_names:
     - joint_fork_wheel_2

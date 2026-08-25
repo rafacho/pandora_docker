@@ -14,7 +14,7 @@ class WorldBroadcaster(Node):
         super().__init__('world_broadcaster')
 
         self.br = tf2_ros.TransformBroadcaster(self)
-        self.create_subscription(Pose, '/pandora/pose', self.handle_pose, 1)
+        self.create_subscription(Pose, 'pose', self.handle_pose, 1)
 
     def handle_pose(self, pose):
         t = geometry_msgs.msg.TransformStamped()

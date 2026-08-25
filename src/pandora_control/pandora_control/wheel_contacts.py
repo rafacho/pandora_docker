@@ -32,15 +32,15 @@ class WheelContact(Node):
 
         self.value = WheelContacts()
 
-        self.pub = self.create_publisher(WheelContacts, '/pandora/wheel_contacts', 1)
+        self.pub = self.create_publisher(WheelContacts, 'wheel_contacts', 1)
 
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer, self)
 
-        wheel1_sub = message_filters.Subscriber(self, Contacts, '/pandora/contacts_1')
-        wheel2_sub = message_filters.Subscriber(self, Contacts, '/pandora/contacts_2')
-        wheel3_sub = message_filters.Subscriber(self, Contacts, '/pandora/contacts_3')
-        wheel4_sub = message_filters.Subscriber(self, Contacts, '/pandora/contacts_4')
+        wheel1_sub = message_filters.Subscriber(self, Contacts, 'contacts_1')
+        wheel2_sub = message_filters.Subscriber(self, Contacts, 'contacts_2')
+        wheel3_sub = message_filters.Subscriber(self, Contacts, 'contacts_3')
+        wheel4_sub = message_filters.Subscriber(self, Contacts, 'contacts_4')
 
         self.ts = message_filters.ApproximateTimeSynchronizer(
             [wheel1_sub, wheel2_sub, wheel3_sub, wheel4_sub], 1, 0.5)

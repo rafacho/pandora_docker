@@ -25,14 +25,14 @@ class StaticStability(Node):
         self.lastSupportPolygon = None
         self.lastCom = None
 
-        self.pubComProjection = self.create_publisher(PointStamped, '/pandora/com_projection', 1)
-        self.get_logger().info("publisher /pandora/com_projection is ready")
-        self.pubStaticStability = self.create_publisher(Float64, '/pandora/static_stability', 1)
-        self.get_logger().info("publisher /pandora/StaticStability is ready")
+        self.pubComProjection = self.create_publisher(PointStamped, 'com_projection', 1)
+        self.get_logger().info("publisher com_projection is ready")
+        self.pubStaticStability = self.create_publisher(Float64, 'static_stability', 1)
+        self.get_logger().info("publisher static_stability is ready")
 
         self.create_subscription(
-            PolygonStamped, '/pandora/support_polygon', self.support_polygon_callback, 1)
-        self.create_subscription(Marker, '/pandora/com', self.com_callback, 1)
+            PolygonStamped, 'support_polygon', self.support_polygon_callback, 1)
+        self.create_subscription(Marker, 'com', self.com_callback, 1)
 
     def support_polygon_callback(self, support_polygon):
         self.lastSupportPolygon = support_polygon

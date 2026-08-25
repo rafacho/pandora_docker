@@ -14,7 +14,7 @@
 
 import yaml
 
-# Shared PID gains for position_controller's 4 actuated joints. See
+# Shared PID gains for leg_controller's 4 actuated joints. See
 # pandora_controllers.yaml's original gain-bump note (2026-08-06): a_Kp
 # 500->5000, a_Kd 10->20 was needed for the SEA spring (Ks=50000) to actually
 # move the joint toward a 0.3 rad setpoint instead of stalling a few
@@ -68,41 +68,53 @@ def _joint_sea(name):
     return sea
 
 
-def build_config():
-    position_controller_params = {
+def build_config(namespace):
+    # Fix (2026-08-25): bare keys like 'controller_manager' only match a node
+    # of that name in the GLOBAL namespace. Since bringup.launch.py runs
+    # controller_manager (and every controller it hosts) under /<namespace>
+    # (see pandora.gazebo's <ros><namespace> fix note), the spawners failed
+    # with "Missing namespace : /pandora or wildcard in parameter file" and
+    # controller_manager itself never learned the controllers' 'type' --
+    # confirmed empirically. The documented fix (controller_manager's own
+    # userdoc) is to key each node's block with its full namespaced path,
+    # '/<namespace>/<node_name>', instead of the bare name or a blanket '/**'
+    # wildcard (which can't disambiguate 4 different nodes' distinct
+    # ros__parameters sharing one file the way a per-node wildcard could).
+    ns = f'/{namespace}'
+    leg_controller_params = {
         'dof': len(JOINT_NAMES),
         'controller_update': 1,
     }
     for i, name in enumerate(JOINT_NAMES, start=1):
-        position_controller_params[f'joint{i}'] = {'name': name, **_joint_gains(name)} # type: ignore
-    position_controller_params['actuators'] = { # type: ignore
-        name: _joint_sea(name) for name in JOINT_NAMES  
+        leg_controller_params[f'joint{i}'] = {'name': name, **_joint_gains(name)} # type: ignore
+    leg_controller_params['actuators'] = { # type: ignore
+        name: _joint_sea(name) for name in JOINT_NAMES
     }
 
     return {
-        'controller_manager': {
+        f'{ns}/controller_manager': {
             'ros__parameters': {
                 'update_rate': 4000,
                 'joint_state_broadcaster': {
                     'type': 'joint_state_broadcaster/JointStateBroadcaster',
                 },
-                'position_controller': {
+                'leg_controller': {
                     'type': 'custom_controller/ActuatorPositionController',
                 },
-                'velocity_controller': {
+                'wheel_controller': {
                     'type': 'diff_drive_controller/DiffDriveController',
                 },
             },
         },
-        'joint_state_broadcaster': {
+        f'{ns}/joint_state_broadcaster': {
             'ros__parameters': {
                 'use_local_topics': False,
             },
         },
-        'position_controller': {
-            'ros__parameters': position_controller_params,
+        f'{ns}/leg_controller': {
+            'ros__parameters': leg_controller_params,
         },
-        'velocity_controller': {
+        f'{ns}/wheel_controller': {
             'ros__parameters': {
                 'left_wheel_names': ['joint_fork_wheel_2', 'joint_fork_wheel_3'],
                 'right_wheel_names': ['joint_fork_wheel_1', 'joint_fork_wheel_4'],
@@ -141,12 +153,12 @@ HEADER = (
 )
 
 
-def generate(output_path):
+def generate(output_path, namespace='pandora'):
     with open(output_path, 'w') as f:
         f.write(HEADER)
-        yaml.dump(build_config(), f, default_flow_style=False, sort_keys=False)
+        yaml.dump(build_config(namespace), f, default_flow_style=False, sort_keys=False)
 
 
 if __name__ == '__main__':
     import sys
-    generate(sys.argv[1])
+    generate(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else 'pandora')

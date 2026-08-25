@@ -12,10 +12,10 @@
 # Lyrical Luth note (2026-08-07): under Lyrical, gz_ros2_control's
 # controller_manager only forwards "--param use_sim_time:=true" to each
 # spawned controller node -- unlike the loaded controller_manager node
-# itself, the per-controller top-level YAML sections (position_controller's
-# "dof"/"joint1"/"actuators", velocity_controller's "wheel_separation" etc.)
-# never reach the individual controller nodes, so position_controller fails
-# to find "dof" and velocity_controller's wheel_separation fails its
+# itself, the per-controller top-level YAML sections (leg_controller's
+# "dof"/"joint1"/"actuators", wheel_controller's "wheel_separation" etc.)
+# never reach the individual controller nodes, so leg_controller fails
+# to find "dof" and wheel_controller's wheel_separation fails its
 # built-in floating-point-range validation against its unset default.
 # Fixed by passing pandora_controllers.yaml explicitly via each spawner's
 # "-p/--param-file" flag, which loads it directly into the controller node
@@ -32,24 +32,30 @@ def generate_launch_description():
     controllers_yaml = PathJoinSubstitution(
         [FindPackageShare('pandora_control'), 'config', 'pandora_controllers.yaml'])
 
+    # '-c controller_manager' (relative) is explicit on purpose: this file is
+    # always included from bringup.launch.py inside a PushRosNamespace group,
+    # and pandora.gazebo's gz_ros2_control plugin puts controller_manager in
+    # that same namespace (see its <ros><namespace> fix note) -- a relative
+    # name here resolves to it correctly under any namespace, so the
+    # spawners don't need to know what that namespace actually is.
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster', '-p', controllers_yaml],
+        arguments=['joint_state_broadcaster', '-c', 'controller_manager', '-p', controllers_yaml],
         output='screen',
     )
 
-    position_controller_spawner = Node(
+    leg_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['position_controller', '-p', controllers_yaml],
+        arguments=['leg_controller', '-c', 'controller_manager', '-p', controllers_yaml],
         output='screen',
     )
 
-    velocity_controller_spawner = Node(
+    wheel_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['velocity_controller', '-p', controllers_yaml],
+        arguments=['wheel_controller', '-c', 'controller_manager', '-p', controllers_yaml],
         output='screen',
     )
 
@@ -60,16 +66,16 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    # Static-stability pipeline: support_polygon needs wheel_N->odom TF (from
-    # joint_state_broadcaster + robot_state_publisher) and com_publisher
+    # Static-stability pipeline: real_support_polygon needs wheel_N->odom TF
+    # (from joint_state_broadcaster + robot_state_publisher) and com_publisher
     # needs /robot_description (from robot_state_publisher); both are already
     # up by the time bringup.launch.py includes this file.
-    support_polygon = Node(
-        package='pandora_control',
-        executable='support_polygon',
-        output='screen',
-        parameters=[{'use_sim_time': True}],
-    )
+    # real_support_polygon = Node(
+    #     package='pandora_control',
+    #     executable='real_support_polygon',
+    #     output='screen',
+    #     parameters=[{'use_sim_time': True}],
+    # )
 
     com_publisher = Node(
         package='pandora_control',
@@ -85,27 +91,27 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    stability_set_point = Node(
-        package='pandora_control',
-        executable='stability_set_point',
-        output='screen',
-        parameters=[{'use_sim_time': True}],
-    )
+    # stability_set_point = Node(
+    #     package='pandora_control',
+    #     executable='stability_set_point',
+    #     output='screen',
+    #     parameters=[{'use_sim_time': True}],
+    # )
    
-    h_control = Node(
-        package='pandora_control', 
-        executable='h_control', 
-        output='screen'
-    )
+    # h_control = Node(
+    #     package='pandora_control', 
+    #     executable='h_control', 
+    #     output='screen'
+    # )
 
     return LaunchDescription([
         joint_state_broadcaster_spawner,
-        position_controller_spawner,
-        velocity_controller_spawner,
+        leg_controller_spawner,
+        wheel_controller_spawner,
         ik_server,
-        support_polygon,
+        # real_support_polygon,
         com_publisher,
         static_stability,
-        stability_set_point,
-        h_control,
+        # stability_set_point,
+        # h_control,
     ])

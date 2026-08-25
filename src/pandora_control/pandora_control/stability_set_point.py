@@ -17,11 +17,11 @@ class StabilityClass(Node):
         super().__init__('stability_set_point')
 
         self.create_subscription(
-            PointStamped, '/pandora/support_polygon/centroid', self.stabilityCallback, 1)
+            PointStamped, 'support_polygon/centroid', self.stabilityCallback, 1)
         self.create_subscription(
-            PolygonStamped, '/pandora/terrain_profile', self.terrainCallback, 1)
+            PolygonStamped, 'terrain_profile', self.terrainCallback, 1)
 
-        self.pubPoseCommand = self.create_publisher(HrefCommand, '/pose_controller/command', 1)
+        self.pubPoseCommand = self.create_publisher(HrefCommand, 'pose_controller/command', 1)
         self.sp = HrefCommand()
 
         self.tfBuffer = tf2_ros.Buffer()
