@@ -38,7 +38,23 @@ def launch_setup(context, pandora_description_share, pandora_gazebo_share, pando
 
     world_file = PathJoinSubstitution([pandora_gazebo_share, 'worlds', *world_path_parts])
     xacro_file = PathJoinSubstitution([pandora_description_share, 'urdf', 'pandora.xacro'])
-    bridge_config = PathJoinSubstitution([pandora_gazebo_share, 'config', 'ros_gz_bridge.yaml'])
+
+    # ros_gz_bridge.yaml is a template (see the file's header note): the
+    # contact sensors' gz_topic_name contains a __WORLD__ placeholder because
+    # gz-sim's Contact system always publishes on the world-scoped default
+    # topic regardless of the <topic> declared in the SDF, and that topic
+    # embeds whichever world was actually loaded. Substitute it here, once
+    # gz_world_name is known, into a generated file -- never edit the
+    # template in place, that would make the substitution one-shot and leave
+    # a stale world name behind on the next run with a different world.
+    bridge_template_path = os.path.join(
+        get_package_share_directory('pandora_gazebo'), 'config', 'ros_gz_bridge.yaml')
+    bridge_config = os.path.join(
+        get_package_share_directory('pandora_gazebo'), 'config', 'ros_gz_bridge.generated.yaml')
+    with open(bridge_template_path) as f:
+        bridge_yaml_text = f.read()
+    with open(bridge_config, 'w') as f:
+        f.write(bridge_yaml_text.replace('__WORLD__', gz_world_name))
 
     x = LaunchConfiguration('x')
     y = LaunchConfiguration('y')
@@ -63,6 +79,18 @@ def launch_setup(context, pandora_description_share, pandora_gazebo_share, pando
         world_file,
         PythonExpression(["'' if '", paused, "' == 'true' else ' -r'"]),
         PythonExpression(["'' if '", gui, "' == 'true' else ' -s'"]),
+        # --headless-rendering: EGL-based offscreen rendering for the
+        # Sensors system (imu/contact/... sensors), instead of GLX/X11.
+        # Without it, in this container the Sensors render thread hangs
+        # forever at "Waiting for init" (confirmed with -v 4) regardless of
+        # GUI vs headless, LIBGL_ALWAYS_SOFTWARE, or a local Xvfb with GLX --
+        # so every sensor topic gets advertised but never actually publishes.
+        # See https://gazebosim.org/api/sim/9/headless_rendering.html.
+        ' --headless-rendering',
+        # TEMP DEBUG (2026-08-20): max verbosity while tracking down why the
+        # Sensors system plugin isn't producing any /imu or /pandora/contacts_N
+        # data -- remove once resolved.
+        ' -v 4',
     ]
 
     gz_sim = IncludeLaunchDescription(
@@ -154,5 +182,7 @@ def generate_launch_description():
     return LaunchDescription(declare_args + [
         OpaqueFunction(
             function=launch_setup,
-            args=[pandora_description_share, pandora_gazebo_share, pandora_control_share]),
+            args=[pandora_description_share, 
+                  pandora_gazebo_share, 
+                  pandora_control_share]),
     ])

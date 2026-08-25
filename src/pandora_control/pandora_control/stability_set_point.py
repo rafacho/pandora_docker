@@ -6,10 +6,10 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import PolygonStamped
-from pandora_msgs.msg import HrefCommand
+from pandora_msgs.msg import HrefCommand # type: ignore
 
 import tf2_ros
-from tf_transformations import euler_from_quaternion
+from tf_transformations import euler_from_quaternion # type: ignore
 
 
 class StabilityClass(Node):
@@ -52,10 +52,10 @@ class StabilityClass(Node):
 
         try:
             trans = self.tfBuffer.lookup_transform(
-                'odom', 'base_link', rclpy.time.Time(),
-                timeout=rclpy.duration.Duration(seconds=1.0))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-                tf2_ros.ExtrapolationException) as err:
+                'odom', 'base_link', rclpy.time.Time(), # type: ignore
+                timeout=rclpy.duration.Duration(seconds=1.0)) # type: ignore
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, # type: ignore
+                tf2_ros.ExtrapolationException) as err: # type: ignore
             self.get_logger().error("TF error: %s" % err)
             return
 

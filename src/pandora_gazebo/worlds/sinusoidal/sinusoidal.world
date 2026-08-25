@@ -29,6 +29,26 @@
         </plugin>
         <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
         <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+        <!-- Required for rendering-based sensor tags (camera, gpu_lidar, ...)
+             to actually run and publish on gz-transport: declaring a sensor
+             on a link/collision is not enough by itself. Without it, ros_gz_bridge
+             still advertises the mapped ROS2 topic (it just mirrors the
+             config), but zero messages ever flow because gz-sim never
+             produces any. NOTE: this system does NOT cover imu/contact
+             sensors, those need their own dedicated systems below. -->
+        <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+          <render_engine>ogre2</render_engine>
+        </plugin>
+        <!-- Fix (2026-08-24): imu.gazebo/contactWheels.gazebo assumed these
+             were already declared here ("pandora.world" in their comments,
+             a file that no longer exists), but only gz-sim-sensors-system was
+             actually present. gz-sim-sensors-system only drives
+             rendering-based sensors (camera, gpu_lidar, ...); IMU and contact
+             sensors are handled by their own separate systems, which were
+             missing entirely, so /imu and /pandora/contacts_N were never
+             produced no matter what the URDF declared. -->
+        <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+        <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
         <light name="sun" type="directional">
             <cast_shadows>true</cast_shadows>
             <pose>0 0 10 0 0 0</pose>

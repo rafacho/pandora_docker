@@ -3,8 +3,6 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
 import numpy as np
 
 from std_msgs.msg import Float64MultiArray
@@ -12,19 +10,24 @@ from custom_messages.msg import CustomCmnd #type: ignore
 from pandora_msgs.srv import IkSrv #type: ignore
 from pandora_msgs.msg import HrefCommand #type: ignore
 
+# Piso para dt no termo derivativo do PID. Guardar so contra dt<=0 nao basta:
+# chamadas de handlePoseCommand em sequencia rapida (sem pausa real) medem
+# um dt positivo mas minusculo (us) no relogio de parede, que ainda explode
+# Pkd*(erro-erroAnterior)/dt. Ver validation_tests/handle_pose_command_convergence.py,
+# caso "stress: sem pausa entre chamadas" -- reproduz a divergencia com o
+# guard antigo (dt<=0) e converge com este piso.
+MIN_DT = 1.0 / 25.0
+
 
 class HandleControl(Node):
     def __init__(self):
         super().__init__('pose_control')
 
-        callback_group = ReentrantCallbackGroup()
-
         self.pubJointCommand = self.create_publisher(CustomCmnd, '/position_controller/command', 1)
         self.get_logger().info("publisher /position_controller/command is ready")
 
         self.create_subscription(
-            HrefCommand, '/pose_controller/command', self.handlePoseCommand, 1,
-            callback_group=callback_group)
+            HrefCommand, '/pose_controller/command', self.handlePoseCommand, 1)
 
         self.create_subscription(Float64MultiArray, '/pandora/imuPose', self.handleImu, 1)
 
@@ -45,7 +48,7 @@ class HandleControl(Node):
         self.errorPositionsIntegral = np.asarray([0, 0, 0], dtype='float64')
         self.pastErrorPositions = np.asarray([0, 0, 0], dtype='float64')
 
-        self.create_timer(1.0 / 25.0, self.run, callback_group=callback_group)
+        self.create_timer(1.0 / 25.0, self.run)
 
         self.get_logger().info("h_control init complete")
 
@@ -55,6 +58,8 @@ class HandleControl(Node):
     def handlePoseCommand(self, spValue):
         now = self.get_clock().now()
         dt = (now - self.pastTime).nanoseconds / 1e9
+        if dt < MIN_DT:
+            dt = MIN_DT
 
         currentState = np.asarray(self.currentState)
         if currentState.size == 0:
@@ -90,11 +95,6 @@ class HandleControl(Node):
         kiPitch = 0.05 #0.01
         kdPitch = 0.03
 
-        # FIXME(ros2-port): dt isn't guarded against 0 (two callbacks landing on
-        # the same clock tick produces inf/nan here, unlike
-        # stability_set_point.py which guards this exact pattern). Ported
-        # unchanged per the "preserve control-law bugs, fix later" decision --
-        # see code review 2026-08-04.
         PIDz = Pkp*errorPositions[2] + Pki*self.errorPositionsIntegral[2]*dt + Pkd*(errorPositions[2] - self.pastErrorPositions[2])/dt
         commandedZ = currentPosition[2] + PIDz
 
@@ -115,28 +115,17 @@ class HandleControl(Node):
         toleranceAngles = 0.02
         tolerancePositions = 0.005
 
-        # FIXME(ros2-port): ".any" is a bound-method reference, not a call --
-        # always truthy, so this anti-windup gate never actually gates. Ported
-        # unchanged per the "preserve control-law bugs, fix later" decision --
-        # see code review 2026-08-04.
-        if (errorAngles > toleranceAngles).any  and self.jointSuccess:
+        if (errorAngles > toleranceAngles).any() and self.jointSuccess:
             self.errorAnglesIntegral += errorAngles
 
-        if (errorPositions > tolerancePositions).any and self.jointSuccess:
+        if (errorPositions > tolerancePositions).any() and self.jointSuccess:
             self.errorPositionsIntegral += errorPositions
 
         self.pastErrorAngles = errorAngles
         self.pastErrorPositions = errorPositions
 
     def inverse_kinematics_client(self, set_point):
-        # rclpy.spin_until_future_complete(self, ...) deadlocks here: this
-        # method runs from run(), a timer callback already being serviced by
-        # the MultiThreadedExecutor spinning this same node in main() --
-        # nesting a second blocking spin on a node an executor already owns
-        # hangs forever (it never times out, so no error ever gets logged;
-        # publish() in run() is simply never reached again). Fixed by firing
-        # the request asynchronously and picking up the result later via
-        # handleIkResponse(), instead of blocking run() on it.
+        
         if self.ikRequestPending or not self.ikClient.service_is_ready():
             return
 
@@ -189,14 +178,9 @@ class HandleControl(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = HandleControl()
-    print('*****************************************************************')
-    executor = MultiThreadedExecutor(num_threads=4)
-    executor.add_node(node)
-    try:
-        executor.spin()
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

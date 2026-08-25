@@ -4,10 +4,17 @@
 	<xacro:macro name="wheel_contacts_config" params="leg_num">
 		<gazebo reference="wheel_${leg_num}">
 			<!-- ROS2 port note (2026-08-04): libgazebo_ros_bumper.so (Gazebo Classic)
-			     replaced by Gazebo Sim's native contact sensor. The world's
-			     gz-sim-contact-system plugin (pandora.world) publishes this sensor's
-			     data on the gz-transport <topic> below; ros_gz_bridge (wired in
-			     pandora_launch) republishes it to ROS2 as pandora/contacts_N. -->
+			     replaced by Gazebo Sim's native contact sensor, driven by the
+			     gz-sim-contact-system world plugin (flat.world/sinusoidal.world).
+			     Fix (2026-08-25): unlike Imu, gz-sim's Contact system ignores the
+			     <topic> below entirely, it always publishes on the
+			     auto-generated, world-scoped default topic
+			     /world/<world>/model/pandora/link/wheel_N/sensor/wheel_N_contact_sensor/contact
+			     (confirmed with `gz topic -i`), never on pandora/contacts_N. The
+			     <topic> element is kept here for documentation/forward-compat
+			     only; the real bridging target lives in
+			     pandora_gazebo/config/ros_gz_bridge.yaml (templated per-world,
+			     resolved by pandora_launch/bringup.launch.py). -->
 			<sensor name="wheel_${leg_num}_contact_sensor" type="contact">
 				<always_on>true</always_on>
 				<update_rate>25</update_rate>

@@ -7,7 +7,7 @@ from pandora_msgs.msg import HrefCommand #type: ignore
 import numpy as np
 
 import tf2_ros
-from tf_transformations import euler_from_quaternion
+from tf_transformations import euler_from_quaternion # type: ignore
 
 
 def set_point():
@@ -27,10 +27,10 @@ def set_point():
 
         try:
             trans = tfBuffer.lookup_transform(
-                'odom', 'base_link', rclpy.time.Time(),
-                timeout=rclpy.duration.Duration(seconds=1.0))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-                tf2_ros.ExtrapolationException) as err:
+                'odom', 'base_link', rclpy.time.Time(), # type: ignore
+                timeout=rclpy.duration.Duration(seconds=1.0)) # type: ignore
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, # type: ignore
+                tf2_ros.ExtrapolationException) as err: # type: ignore
             node.get_logger().error("TF error: %s" % err)
             rclpy.spin_once(node, timeout_sec=1.0 / rate_hz)
             continue

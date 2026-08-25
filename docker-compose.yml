@@ -36,6 +36,10 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${XAUTHORITY}:/home/rafacho/.Xauthority:ro
       - ./src:/home/rafacho/ros_lyrical_docker_ws/src:rw
+      # Persists zsh command history on the host so it survives container
+      # recreation (rebuild, `docker compose down`, etc.) -- everything else
+      # under $HOME lives in the container's writable layer and is lost then.
+      - ./.docker-data/zsh_history:/home/rafacho/.zsh_history:rw
       # Only the Intel card/render nodes -- deliberately NOT the whole
       # /dev/dri directory, so the NVIDIA node (card2/renderD129, unusable
       # without the NVIDIA container runtime) isn't even visible inside the

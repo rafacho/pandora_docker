@@ -9,9 +9,12 @@ log/
 __pycache__/
 *.pyc
 
+# Persisted zsh command history (host-side, see docker-compose.yml)
+.docker-data/
+
 # Claude Code local/session-specific settings (not shared config)
 .claude/settings.local.json
 
 src/jacobian.pdf
-src/pandora_control/pandora_control/plot_pose_demo.py
 src/velocity_analysis.pdf
+src/pandora_control/pandora_control/validation_tests/

@@ -3,26 +3,40 @@
 # pandora_gazebo/urdf/pandora.gazebo to ROS2, replacing the ROS1 Gazebo
 # Classic plugins (libgazebo_ros_bumper.so, libgazebo_ros_imu_sensor.so) that
 # used to publish these directly as ROS topics themselves.
+#
+# Fix (2026-08-25): the contact sensors' gz_topic_name below contains the
+# literal placeholder __WORLD__, NOT the actual world name -- this file is a
+# template. bringup.launch.py's launch_setup() substitutes __WORLD__ with
+# whichever world was picked (the 'world' launch arg -> flat/sinusoidal) and
+# writes the result to ros_gz_bridge.generated.yaml, which is what actually
+# gets passed to parameter_bridge. Editing this file directly is fine; just
+# don't remove the placeholder. Background: unlike the Imu system (which goes
+# through gz-sensors' generic Sensor::Topic() and honors an explicit <topic>
+# override), gz-sim's Contact system ignores the contact sensor's <topic>
+# element entirely and always publishes on the auto-generated, world-scoped
+# topic /world/<world>/model/pandora/link/wheel_N/sensor/wheel_N_contact_sensor/contact
+# (confirmed empirically via `gz topic -i`) -- so the bridge has to target
+# that exact path instead of the /pandora/contacts_N the SDF declares.
 - ros_topic_name: "/pandora/contacts_1"
-  gz_topic_name: "/pandora/contacts_1"
+  gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_1/sensor/wheel_1_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/pandora/contacts_2"
-  gz_topic_name: "/pandora/contacts_2"
+  gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_2/sensor/wheel_2_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/pandora/contacts_3"
-  gz_topic_name: "/pandora/contacts_3"
+  gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_3/sensor/wheel_3_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/pandora/contacts_4"
-  gz_topic_name: "/pandora/contacts_4"
+  gz_topic_name: "/world/__WORLD__/model/pandora/link/wheel_4/sensor/wheel_4_contact_sensor/contact"
   ros_type_name: "ros_gz_interfaces/msg/Contacts"
   gz_type_name: "gz.msgs.Contacts"
   direction: GZ_TO_ROS

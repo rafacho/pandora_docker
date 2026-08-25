@@ -35,7 +35,7 @@ def generate_launch_description():
     joint_state_broadcaster_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster'],
+        arguments=['joint_state_broadcaster', '-p', controllers_yaml],
         output='screen',
     )
 
@@ -60,15 +60,52 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    # Uncomment to also bring up h_control / static_stability, matching the
-    # ROS1 launch file (both were commented out there too).
-    # h_control = Node(package='pandora_control', executable='h_control', output='screen')
-    # static_stability = Node(
-    #     package='pandora_control', executable='static_stability', output='screen')
+    # Static-stability pipeline: support_polygon needs wheel_N->odom TF (from
+    # joint_state_broadcaster + robot_state_publisher) and com_publisher
+    # needs /robot_description (from robot_state_publisher); both are already
+    # up by the time bringup.launch.py includes this file.
+    support_polygon = Node(
+        package='pandora_control',
+        executable='support_polygon',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+
+    com_publisher = Node(
+        package='pandora_control',
+        executable='com_publisher',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+
+    static_stability = Node(
+        package='pandora_control',
+        executable='static_stability',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+
+    stability_set_point = Node(
+        package='pandora_control',
+        executable='stability_set_point',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+   
+    h_control = Node(
+        package='pandora_control', 
+        executable='h_control', 
+        output='screen'
+    )
 
     return LaunchDescription([
         joint_state_broadcaster_spawner,
         position_controller_spawner,
         velocity_controller_spawner,
         ik_server,
+        support_polygon,
+        com_publisher,
+        static_stability,
+        stability_set_point,
+        h_control,
     ])

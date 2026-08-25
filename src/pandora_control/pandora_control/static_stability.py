@@ -3,7 +3,6 @@
 
 import rclpy
 from rclpy.node import Node
-import message_filters
 import numpy as np
 
 from std_msgs.msg import Float64
@@ -23,18 +22,29 @@ class StaticStability(Node):
         self.valueCom = PointStamped()
         self.valueStability = 0.0
 
+        self.lastSupportPolygon = None
+        self.lastCom = None
+
         self.pubComProjection = self.create_publisher(PointStamped, '/pandora/com_projection', 1)
         self.get_logger().info("publisher /pandora/com_projection is ready")
         self.pubStaticStability = self.create_publisher(Float64, '/pandora/static_stability', 1)
         self.get_logger().info("publisher /pandora/StaticStability is ready")
 
-        subSupportPolygon = message_filters.Subscriber(self, PolygonStamped, '/pandora/support_polygon')
-        subCom = message_filters.Subscriber(self, Marker, '/pandora/com')
+        self.create_subscription(
+            PolygonStamped, '/pandora/support_polygon', self.support_polygon_callback, 1)
+        self.create_subscription(Marker, '/pandora/com', self.com_callback, 1)
 
-        self.ts = message_filters.ApproximateTimeSynchronizer([subSupportPolygon, subCom], 1, 0.5)
-        self.ts.registerCallback(self.callback)
+    def support_polygon_callback(self, support_polygon):
+        self.lastSupportPolygon = support_polygon
+        if self.lastCom is not None:
+            self.callback(self.lastSupportPolygon, self.lastCom)
 
-    def callback(self, sp, com):
+    def com_callback(self, com):
+        self.lastCom = com
+        if self.lastSupportPolygon is not None:
+            self.callback(self.lastSupportPolygon, self.lastCom)
+
+    def callback(self, support_polygon, com):
         try:
             comProjectionPoint = PointStamped()
             comProjectionPoint.header.stamp = self.get_clock().now().to_msg()
@@ -46,16 +56,16 @@ class StaticStability(Node):
             comProjection = np.array([com.pose.position.x, com.pose.position.y, 0])
 
             minDist = 100  # initialize minDist with a large number to enter the if condition minDist > d[2]
-            if len(sp.polygon.points) < 3:
+            if len(support_polygon.polygon.points) < 3:
                 minDist = 0
             else:
-                for i in range(len(sp.polygon.points)):
-                    p1 = np.array([sp.polygon.points[i].x, sp.polygon.points[i].y, 0])
+                for i in range(len(support_polygon.polygon.points)):
+                    p1 = np.array([support_polygon.polygon.points[i].x, support_polygon.polygon.points[i].y, 0])
 
-                    if (i + 1) >= len(sp.polygon.points):
-                        p2 = np.array([sp.polygon.points[0].x, sp.polygon.points[0].y, 0])
+                    if (i + 1) >= len(support_polygon.polygon.points):
+                        p2 = np.array([support_polygon.polygon.points[0].x, support_polygon.polygon.points[0].y, 0])
                     else:
-                        p2 = np.array([sp.polygon.points[i+1].x, sp.polygon.points[i+1].y, 0])
+                        p2 = np.array([support_polygon.polygon.points[i+1].x, support_polygon.polygon.points[i+1].y, 0])
 
                     d = np.cross(p2-p1, comProjection-p1) / np.linalg.norm(p2-p1)
 

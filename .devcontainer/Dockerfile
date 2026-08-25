@@ -78,6 +78,7 @@ RUN apt-get update && \
         ros-lyrical-rqt-tf-tree \
         ros-lyrical-tf-transformations \
         ros-lyrical-joint-state-publisher-gui \
+        ros-lyrical-plotjuggler-ros \
         python3-pil \
         && rm -rf /var/lib/apt/lists/*
 
@@ -133,7 +134,19 @@ RUN for plugin in \
 RUN sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/' /home/$USERNAME/.zshrc && \
     sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting colorize)/' /home/$USERNAME/.zshrc && \
     echo "source /opt/ros/lyrical/setup.zsh" >> /home/$USERNAME/.zshrc && \
-    echo "[ -f /home/$USERNAME/ros_lyrical_docker_ws/install/setup.zsh ] && source /home/$USERNAME/ros_lyrical_docker_ws/install/setup.zsh" >> /home/$USERNAME/.zshrc
+    echo "[ -f /home/$USERNAME/ros_lyrical_docker_ws/install/setup.zsh ] && source /home/$USERNAME/ros_lyrical_docker_ws/install/setup.zsh" >> /home/$USERNAME/.zshrc && \
+    { \
+        echo ""; \
+        echo "# History: bind-mounted to the host (see docker-compose.yml) so it"; \
+        echo "# survives container recreation; shared/appended incrementally so"; \
+        echo "# concurrent \`docker exec\` shells don't clobber each other's history."; \
+        echo "HISTFILE=\$HOME/.zsh_history"; \
+        echo "HISTSIZE=50000"; \
+        echo "SAVEHIST=50000"; \
+        echo "setopt APPEND_HISTORY"; \
+        echo "setopt INC_APPEND_HISTORY"; \
+        echo "setopt SHARE_HISTORY"; \
+    } >> /home/$USERNAME/.zshrc
 
 ############################################################
 # Workspace

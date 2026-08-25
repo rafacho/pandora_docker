@@ -9,15 +9,15 @@ from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import Imu, JointState
 
 import tf2_ros
-from tf_transformations import euler_from_quaternion
+from tf_transformations import euler_from_quaternion # type: ignore
 
 from geometry_msgs.msg import PolygonStamped
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import Point32
 
-from pandora_msgs.srv import IkSrv
+from pandora_msgs.srv import IkSrv # type: ignore
 
-from pandora_control import MDH
+from pandora_control import MDH # type: ignore
 
 
 class KinematicsWrapper(Node):
@@ -50,7 +50,7 @@ class KinematicsWrapper(Node):
 
         self.pubCentroid = self.create_publisher(
             PointStamped, '/pandora/support_polygon/centroid', 1)
-        self.get_logger().info("publisher /pandora/centroid is ready")
+        self.get_logger().info("publisher /pandora/support_polygon/centroid is ready")
 
         self.pubImuPose = self.create_publisher(Float64MultiArray, '/pandora/imuPose', 1)
         self.get_logger().info("publisher /pandora/imuPose is ready")
@@ -97,8 +97,8 @@ class KinematicsWrapper(Node):
 
         if len(vertexes) != 0:
             for i in range(len(vertexes)):
-                _x_list.append(vertexes[i].x)
-                _y_list.append(vertexes[i].y)
+                _x_list.append(vertexes[i].x) # type: ignore
+                _y_list.append(vertexes[i].y) # type: ignore
 
             _len = len(vertexes)
             _x = sum(_x_list) / _len
@@ -150,10 +150,10 @@ class KinematicsWrapper(Node):
 
         try:
             trans = self.tfBuffer.lookup_transform(
-                'odom', 'base_link', rclpy.time.Time(),
-                timeout=rclpy.duration.Duration(seconds=1.0))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-                tf2_ros.ExtrapolationException) as err:
+                'odom', 'base_link', rclpy.time.Time(), # type: ignore
+                timeout=rclpy.duration.Duration(seconds=1.0)) # type: ignore
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, # type: ignore
+                tf2_ros.ExtrapolationException) as err: # type: ignore
             self.get_logger().error("TF error: %s" % err)
             return
 

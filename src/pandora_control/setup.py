@@ -23,6 +23,7 @@ setup(
     license='TODO',
     entry_points={
         'console_scripts': [
+            'com_publisher = pandora_control.com_publisher:main',
             'h_control = pandora_control.h_control:main',
             'ik_server = pandora_control.ik_server:main',
             'set_point = pandora_control.set_point:main',
