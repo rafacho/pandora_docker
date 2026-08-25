@@ -195,11 +195,23 @@
 		</inertial>			
 	</link>
 
-	<!-- joint fork_wheel -->	
+	<!-- joint fork_wheel -->
 	<joint name="joint_${fork}_${wheel}_${leg_num}" type="continuous">
 		<origin xyz="0 0 ${wheel_radius + 0.015}" rpy="${PI/2} 0 0"/>
 
-		<axis xyz="0 0 1 "/>
+		<!-- Fix (2026-08-25): legs 3/4 are a front-to-back mirror of legs 1/2
+		     (see the base_link->frame joint's rpy sign flip above and the
+		     outer rotz=PI passed for legs 3/4 in pandora.xacro), so the same
+		     local "0 0 1" axis ends up pointing the opposite way in world
+		     frame for the rear wheels. Without this flip, velocity_controller
+		     driving all 4 wheels with the same-sign command spun the front
+		     and rear wheels in opposite directions (confirmed visually). -->
+		<xacro:if value="${leg_num == 1 or leg_num == 2}">
+			<axis xyz="0 0 1"/>
+		</xacro:if>
+		<xacro:if value="${leg_num == 3 or leg_num == 4}">
+			<axis xyz="0 0 -1"/>
+		</xacro:if>
 		<limit effort="350" velocity="20.0"/>
 
 	    <parent link="${fork}_${leg_num}"/>
