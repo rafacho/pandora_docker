@@ -78,9 +78,18 @@ RUN apt-get update && \
         ros-lyrical-rqt-tf-tree \
         ros-lyrical-tf-transformations \
         ros-lyrical-joint-state-publisher-gui \
-        ros-lyrical-plotjuggler-ros \
+        ros-lyrical-plotjuggler \
         python3-pil \
         && rm -rf /var/lib/apt/lists/*
+
+# plotjuggler note (2026-08-27): switched from ros-lyrical-plotjuggler-ros to
+# the standalone ros-lyrical-plotjuggler. The -ros package (which adds the ROS2
+# topic-streaming plugin) is not in the Lyrical repo as of the 2026-08-17
+# osrf/ros:lyrical-desktop-full base-image refresh -- that refresh is also why
+# a rebuild that worked earlier now fails here with exit 100 / "Unable to
+# locate package ros-lyrical-plotjuggler-ros". plotjuggler isn't referenced
+# anywhere in this workspace (dev-environment extra). Re-add
+# ros-lyrical-plotjuggler-ros once it's released, if ROS2 streaming is needed.
 
 # ROS version switch note (2026-08-06): the nav2-* packages (nav2-bringup,
 # nav2-bt-navigator, nav2-controller, nav2-planner, nav2-behaviors,

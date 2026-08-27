@@ -14,6 +14,7 @@ from ros_gz_interfaces.msg import Contacts
 
 from geometry_msgs.msg import PolygonStamped
 from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import Point32
 
 import tf2_ros
 
@@ -21,7 +22,7 @@ import tf2_ros
 # without it, a wheel whose contact topic goes silent would keep its last
 # cached message reused forever instead of the whole update simply not
 # firing, like the synchronizer used to do.
-MAX_CONTACT_AGE = 0.5  # seconds
+MAX_CONTACT_AGE = 0.1  # seconds
 
 
 class realSupportPolygon(Node):
@@ -60,40 +61,68 @@ class realSupportPolygon(Node):
         return contact_callback
 
     def drawPolygon(self, w1, w2, w3, w4):
-        now = self.get_clock().now()
-        for msg in (w1, w2, w3, w4):
-            age = (now - Time.from_msg(msg.header.stamp)).nanoseconds / 1e9
-            if age > MAX_CONTACT_AGE:
-                self.get_logger().error(
-                    "Stale wheel contact data (%.2fs old) -- skipping support polygon update"
-                    % age)
-                return
-
+        # Guard the whole body: this runs inside a subscription callback on the
+        # single-threaded executor, and an exception escaping here doesn't just
+        # log -- it tears the process down with SIGABRT. Every expected failure
+        # (stale data, missing TF) is handled below; this catch-all is only for
+        # genuinely unexpected bugs, and skips the tick rather than crashing.
         try:
+            now = self.get_clock().now()
+
             supportPolygon = PolygonStamped()
             supportPolygon.header.frame_id = "odom"
-            supportPolygon.header.stamp = self.get_clock().now().to_msg()
+            supportPolygon.header.stamp = now.to_msg()
 
-            contacts = [w1, w2, w3, w4]  # wheel contacts
+            contacts = [w1, w2, w3, w4]  # per-wheel contact messages
             for i in range(4):
-                if contacts[i].contacts:
-                    wheel = 'wheel_' + str(i + 1)
+                msg = contacts[i]
+
+                # A wheel is a support-polygon vertex only while it is actually
+                # on the ground, i.e. its contact sensor reported at least one
+                # contact *recently*. Two ways that fails:
+                #   - msg.contacts is empty: sensor published, nothing touching;
+                #   - msg is stale: the gz-sim contact sensor stops publishing
+                #     altogether while the wheel is airborne, so the last cached
+                #     message would otherwise be reused forever.
+                # Either way, drop just this wheel and keep building the polygon
+                # from the others (this was a global `return` before -- the
+                # whole polygon froze the moment any single wheel lifted off).
+                age = (now - Time.from_msg(msg.header.stamp)).nanoseconds / 1e9
+                if age > MAX_CONTACT_AGE or not msg.contacts:
+                    continue
+
+                wheel = 'wheel_' + str(i + 1)
+                try:
+                    # No timeout= here: a blocking wait can't be satisfied
+                    # from inside a callback on the single-threaded executor
+                    # (the TransformListener needs that same thread to drain
+                    # /tf), so it would just stall the full duration and
+                    # then fail anyway. Time() = latest transform available.
                     trans = self.tfBuffer.lookup_transform(
-                        'odom', wheel, rclpy.time.Time(), # type: ignore
-                        timeout=rclpy.duration.Duration(seconds=1.0)) # type: ignore
-                    positionWheel = trans.transform.translation
-                    positionWheel.z = 0.0
-                    supportPolygon.polygon.points.append(positionWheel) # type: ignore
+                        'odom', wheel, rclpy.time.Time())  # type: ignore
+                except tf2_ros.TransformException as err:  # type: ignore
+                    # wheel_N not in the TF tree yet (robot_state_publisher
+                    # / joint_state_broadcaster still coming up, or the leg
+                    # loop-closure links not attached). Skip this wheel this
+                    # tick, like com_publisher does per-link.
+                    self.get_logger().warning(
+                        "TF error looking up odom->%s: %s" % (wheel, err))
+                    continue
 
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, # type: ignore
-                tf2_ros.ExtrapolationException) as err: # type: ignore
-            self.get_logger().error("TF error: %s" % err)
+                point = Point32()
+                point.x = trans.transform.translation.x
+                point.y = trans.transform.translation.y
+                point.z = 0.0
+                supportPolygon.polygon.points.append(point)  # type: ignore
 
-        # NOTE(ros2-port): faithfully preserved -- on a TF error above, this
-        # still runs and publishes whatever partial `supportPolygon` was built
-        # before the exception, exactly like the ROS1 version (no early
-        # return). See code review 2026-08-04.
-        self.value = supportPolygon # type: ignore
+        except Exception as err:  # noqa: BLE001 -- see comment above
+            self.get_logger().error("drawPolygon failed, skipping tick: %s" % err)
+            return
+
+        # Publishes whatever polygon was built -- one vertex per grounded wheel,
+        # so 4 points with all wheels down, fewer (a triangle / segment) while
+        # one or more wheels are off the ground.
+        self.value = supportPolygon
         self.valueCentroid = self.centroid()
 
         self.run()

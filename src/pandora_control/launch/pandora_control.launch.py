@@ -70,12 +70,12 @@ def generate_launch_description():
     # (from joint_state_broadcaster + robot_state_publisher) and com_publisher
     # needs /robot_description (from robot_state_publisher); both are already
     # up by the time bringup.launch.py includes this file.
-    # real_support_polygon = Node(
-    #     package='pandora_control',
-    #     executable='real_support_polygon',
-    #     output='screen',
-    #     parameters=[{'use_sim_time': True}],
-    # )
+    real_support_polygon = Node(
+        package='pandora_control',
+        executable='real_support_polygon',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
 
     com_publisher = Node(
         package='pandora_control',
@@ -109,7 +109,7 @@ def generate_launch_description():
         leg_controller_spawner,
         wheel_controller_spawner,
         ik_server,
-        # real_support_polygon,
+        real_support_polygon,
         com_publisher,
         static_stability,
         # stability_set_point,
